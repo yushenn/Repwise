@@ -1,0 +1,901 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0F1012">
+<meta name="description" content="Workout tracker with a built-in coach: sets, reps, weights, rest timer, 90+ exercises with form cues, training splits, progressive overload plans and a supplement guide.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Setwise</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0F1012;--s1:#1A1C20;--s2:#24272C;--line:#2E3238;--line2:#3A3F46;--tx:#F2F3F0;--mut:#A3A8B0;--dim:#8A9099;--acc:#C8F031;--warn:#FF9F5A;--nav:72px}
+*{box-sizing:border-box}
+html,body{margin:0;background:#08090A;color:var(--tx);font-family:'Barlow',system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+p{margin:0;line-height:1.5;font-size:14px;color:#D6D9DD}
+#app{position:relative;max-width:480px;height:100vh;height:100dvh;margin:0 auto;background:var(--bg);display:flex;flex-direction:column;overflow:hidden}
+@media(min-width:520px){#app{height:min(100dvh,900px);margin-top:max(0px,calc((100dvh - 900px)/2));border-radius:28px;border:1px solid #22252A}}
+header{padding:calc(16px + env(safe-area-inset-top)) 20px 12px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;border-bottom:1px solid #22252A}
+.brand{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--acc)}
+h1,.h1{margin:0;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:32px;line-height:1;text-transform:uppercase}
+.h1{font-size:34px}
+.h2{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:700;text-transform:uppercase;line-height:1}
+.h3{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;text-transform:uppercase}
+.mt{margin-top:10px}
+main{flex:1 1 auto;min-height:0;overflow-y:auto;padding:16px 16px calc(var(--nav) + 120px);scrollbar-width:none}
+main::-webkit-scrollbar,.detail::-webkit-scrollbar,.scroll::-webkit-scrollbar{display:none}
+.stack{display:flex;flex-direction:column;gap:14px}
+.stack.tight{gap:8px}
+.card{background:var(--s1);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.card.tight{padding:14px;gap:4px;border-radius:14px}
+.card.flush{padding:0;gap:0;overflow:hidden}
+.card.hl{border-color:var(--acc)}
+.row{display:flex;align-items:center;gap:8px}
+.row.top{align-items:flex-start}.row.between{justify-content:space-between;align-items:baseline}.row.wrap{flex-wrap:wrap}
+.grow{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:3px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.muted{color:var(--mut)}.dim{color:var(--dim)}.acc{color:var(--acc)}.warn{color:var(--warn)}
+.small{font-size:13px}.tiny{font-size:11px;text-transform:uppercase;letter-spacing:.08em}.big{font-size:15px}
+.cond{font-family:'Barlow Condensed',sans-serif;font-weight:700}.up{text-transform:uppercase}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+.eyebrow.acc{color:var(--acc)}.eyebrow.warn{color:var(--warn)}
+.label{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+.group{display:flex;flex-direction:column;gap:8px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.btn{height:52px;border-radius:14px;border:0;font-size:16px;font-weight:700;padding:0 16px}
+.btn.sm{height:44px;font-size:14px;border-radius:12px;padding:0 14px}
+.btn.acc{background:var(--acc);color:#0F1012}
+.btn.ghost{background:none;border:1px solid var(--line2);font-weight:600}
+.btn.line{background:none;border:1px solid #C9CCD0;color:#0F1012}
+.btn.dark{background:#0F1012;color:#F2F3F0}
+.iconbtn{width:44px;height:44px;flex:0 0 44px;border-radius:12px;border:0;background:var(--s2);color:var(--mut);display:flex;align-items:center;justify-content:center}
+.chips{display:flex;gap:8px}.chips.wrap{flex-wrap:wrap}
+.chips.scroll{overflow-x:auto;margin:0 -16px;padding:0 16px;scrollbar-width:none}
+.chip{flex:0 0 auto;min-height:40px;padding:0 14px;border-radius:99px;font-size:14px;font-weight:600;white-space:nowrap;border:1px solid var(--line2);background:var(--s2)}
+.chips.scroll .chip{background:var(--s1);border-color:var(--line)}
+.chip.on,.chips.scroll .chip.on{background:var(--acc);border-color:var(--acc);color:#0F1012}
+.chip.passed{color:var(--mut)}
+.seg{display:flex;gap:4px}.seg .chip{flex:1 1 0;min-width:0;padding:0;border-radius:10px;font-weight:700}
+.field{display:flex;flex-direction:column;gap:6px}
+.field input{height:48px;width:100%;border-radius:12px;border:1px solid var(--line2);background:var(--s2);padding:0 12px;font-size:18px;font-weight:600;outline:none}
+.field input:focus,.search:focus-within{border-color:var(--acc)}
+.bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden}.bar div{height:100%;background:var(--acc);border-radius:99px;transition:width .3s}
+.mini{display:flex;flex-direction:column;gap:2px}.mini span{font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.08em}.mini b{font-family:'Barlow Condensed',sans-serif;font-size:24px}
+.coachline{display:flex;align-items:center;gap:8px;width:100%;text-align:left;background:var(--s2);border:0;border-radius:12px;padding:10px 12px;color:#D6D9DD;font-size:13px;line-height:1.4;min-height:44px}
+.coachline span{flex:1 1 auto}.coachline b{white-space:nowrap}
+.empty{border:1px dashed var(--line2);border-radius:18px;padding:24px 20px;text-align:center;color:var(--mut);font-size:15px;line-height:1.5}
+.exname{background:none;border:0;padding:0;text-align:left;display:flex;flex-direction:column;gap:3px;flex:1 1 auto;min-width:0}
+.exname b{font-size:18px;line-height:1.2}.exname span{font-size:13px}
+.cue{font-size:13px;line-height:1.4;color:#D6D9DD;background:var(--s2);border-radius:10px;padding:8px 10px}
+.sethead,.setrow{display:grid;grid-template-columns:28px 1fr 1fr 44px;gap:8px;align-items:center}
+.sethead{font-size:11px;font-weight:600;letter-spacing:.1em;color:var(--mut);text-transform:uppercase;padding:0 2px}
+.sethead span:not(:first-child){text-align:center}
+.setrow{border-radius:12px;padding:2px}.setrow.done{background:rgba(200,240,49,.12)}
+.sn{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;text-align:center;color:var(--mut)}
+.stepper{display:flex;align-items:center;background:var(--s2);border-radius:12px;overflow:hidden}
+.stepper button{width:38px;height:44px;border:0;background:none;font-size:20px;flex:0 0 38px}
+.stepper span{flex:1 1 auto;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;white-space:nowrap}
+.check{width:44px;height:44px;border-radius:12px;border:0;display:flex;align-items:center;justify-content:center;background:var(--s2);color:var(--mut)}
+.setrow.done .check{background:var(--acc);color:#0F1012}
+.resting{display:flex;align-items:center;gap:10px;border-radius:12px;padding:10px 12px;background:var(--acc);color:#0F1012;font-size:14px;font-weight:600}
+.resting span{flex:1 1 auto}.resting b{font-family:'Barlow Condensed',sans-serif;font-size:24px}
+.tip{display:flex;gap:10px;align-items:flex-start;border-radius:12px;padding:10px 12px;background:#1F2A12;border:1px solid #3F5520;font-size:14px;line-height:1.45;color:#E4F2C4}
+.tip svg{flex:0 0 18px;color:var(--acc);margin-top:1px}
+.rest{margin-left:auto;display:flex;align-items:center;gap:2px;background:var(--s2);border-radius:12px;padding-left:10px;color:var(--mut)}
+.rest button{width:34px;height:44px;border:0;background:none;font-size:18px;color:var(--tx)}
+.rest b{font-family:'Barlow Condensed',sans-serif;font-size:20px;min-width:40px;text-align:center;color:var(--tx)}
+.rest .small{margin-left:4px}
+.histrow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.histrow:last-child{border-bottom:0}.histrow div{display:flex;flex-direction:column;gap:2px}
+.tile{background:var(--s2);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:2px}
+.tl{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.08em}
+.tv{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:700;line-height:1.15}
+.ts{font-size:12px;color:var(--mut)}
+.grid2 .tile:first-child .tv{color:var(--acc)}
+.inset{background:var(--s2);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:6px}
+.step{display:flex;gap:12px;align-items:flex-start;font-size:15px;line-height:1.5}
+.num{flex:0 0 28px;height:28px;border-radius:99px;background:var(--s2);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;color:var(--acc)}
+.step span:last-child{padding-top:2px}
+.weeks{border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.wk{display:grid;grid-template-columns:64px 64px 76px 1fr;gap:8px;align-items:center;padding:10px 12px;background:var(--s2);border-bottom:1px solid var(--line);font-size:13px}
+.wk:nth-child(even){background:#1F2125}.wk:last-child{border-bottom:0}
+.wk b{font-family:'Barlow Condensed',sans-serif;font-size:19px}
+.ladder{display:flex;flex-direction:column;gap:8px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.ladder .chip{min-height:36px;padding:0 10px;font-size:13px}
+.bullet{display:flex;gap:10px;font-size:14px;line-height:1.5;color:#D6D9DD}.bullet span:first-child{font-weight:700}
+.search{display:flex;align-items:center;gap:10px;background:var(--s1);border:1px solid var(--line);border-radius:14px;padding:0 14px;height:48px;color:var(--mut)}
+.search input{flex:1 1 auto;min-width:0;background:none;border:0;outline:none;font-size:16px;color:var(--tx)}
+.exitem{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--s1);border:1px solid var(--line);border-radius:14px;padding:12px 14px;min-height:64px}
+.exitem b{font-size:16px}.right{display:flex;flex-direction:column;align-items:flex-end;gap:2px}.right .cond{font-size:18px}
+.acc-head{width:100%;background:none;border:0;text-align:left;padding:14px 16px;display:flex;align-items:center;gap:12px}
+.acc-head b{font-size:17px}
+.acc-body{padding:0 16px 16px;display:flex;flex-direction:column;gap:10px}
+.badge{flex:0 0 52px;height:52px;border-radius:14px;background:var(--s2);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.badge b{font-family:'Barlow Condensed',sans-serif;font-size:24px;line-height:1}.badge span{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.08em}
+.chev{font-size:22px;color:var(--mut)}
+.day{background:var(--s2);border-radius:14px;padding:12px;display:flex;align-items:center;gap:10px}.day b{font-size:18px}
+.tier{flex:0 0 auto;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:5px 9px;border-radius:99px;color:#0F1012}
+.warnbox{border:1px solid #5A3E2A;background:#241A13;border-radius:14px;padding:12px 14px;font-size:13px;line-height:1.5;color:#F1D9C6;display:flex;flex-direction:column;gap:6px}
+.warnbox p{color:#F1D9C6;font-size:15px}
+.detail{position:absolute;inset:0 0 var(--nav) 0;background:var(--bg);z-index:5;overflow-y:auto;scrollbar-width:none}
+.dhead{padding:calc(16px + env(safe-area-inset-top)) 16px 0;display:flex;align-items:center;gap:10px}
+.dbody{padding:14px 20px 120px}
+.timer{position:absolute;left:12px;right:12px;bottom:calc(var(--nav) + 12px);z-index:6;background:#F2F3F0;color:#0F1012;border-radius:18px;padding:12px 12px 12px 16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.timer .eyebrow{color:#4A4F57}.timer.fin{background:var(--acc)}
+.tbig{font-family:'Barlow Condensed',sans-serif;font-size:34px;line-height:1}
+.tbar{height:6px;background:#D8DBDF;border-radius:99px;overflow:hidden}.tbar div{height:100%;background:#0F1012;border-radius:99px;transition:width .25s linear}
+nav{position:absolute;left:0;right:0;bottom:0;height:calc(var(--nav) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);z-index:7;background:#15171A;border-top:1px solid #22252A;display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
+nav button{border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:12px;font-weight:600;color:var(--dim)}
+nav button.on{color:var(--acc)}
+.toast{position:absolute;left:50%;top:calc(16px + env(safe-area-inset-top));transform:translateX(-50%);z-index:9;background:var(--acc);color:#0F1012;font-weight:700;font-size:14px;padding:10px 16px;border-radius:99px;box-shadow:0 8px 24px rgba(0,0,0,.4);white-space:nowrap}
+button:focus-visible,input:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<noscript>This app needs JavaScript turned on.</noscript>
+<script>
+
+var MUSCLES = [
+  ['chest','Chest'],['back','Back'],['shoulders','Shoulders'],['biceps','Biceps'],['triceps','Triceps'],
+  ['quads','Quads'],['hams','Hams & Glutes'],['calves','Calves'],['core','Core'],['forearms','Forearms']
+];
+
+var GUIDES = {
+  chest: { feel: 'A deep stretch across the chest at the bottom and a squeeze as your arms come together. Front delts and triceps help, but the chest should do most of the work.', load: 'Heavy presses at 5–8 reps first, then dumbbell or machine presses at 8–12 and flyes at 10–15.', fix: 'Feel it all in your shoulders? Pinch shoulder blades back and down, drop the incline to 30°, and keep elbows under ~70° from your body.' },
+  back: { feel: 'Lats (the sides of your back under the armpits) stretching at the top of pulls, and the mid-back pinching together on rows. You should NOT mainly feel biceps or forearms.', load: 'Back takes heavy loads well: rows & pulldowns 6–12, deadlifts 3–6. Heavy only counts if the reps are clean — no swinging.', fix: 'Only feel your arms? Use lifting straps, think "pull with the elbows, hands are hooks", pause 1 s at the squeeze, and drop the weight 10–20% until your back does the work.' },
+  shoulders: { feel: 'Side delts burn on raises (outer shoulder — not your neck). Front delts work on presses; rear delts on face pulls and reverse flyes.', load: 'Presses heavy at 5–10. Lateral and rear raises light at 12–20 — delts respond best to high reps and constant tension.', fix: 'Traps taking over on raises? Go lighter, lean slightly forward, lead with your elbows and stop at shoulder height.' },
+  biceps: { feel: 'Front of the upper arm: a stretch at the bottom (incline curls), a hard squeeze at the top.', load: 'Moderate weight, 8–15 reps. Biceps are small — heavy cheat curls shift the work to your back and shoulders.', fix: 'Pin your elbows at your sides, no hip swing, and lower in 2–3 seconds.' },
+  triceps: { feel: 'Back of the upper arm — near the elbow on pushdowns, a long stretch on overhead extensions.', load: 'Go heavy on close-grip bench and dips (5–8 reps). Extensions and pushdowns at 8–15. Overhead work hits the long head, the biggest part of the triceps.', fix: 'Elbow pain? Switch to rope or cables, use 12–15 reps and warm up with 2 light sets.' },
+  quads: { feel: 'Front of the thighs, burning near the knee at the bottom. The deeper your knees bend, the more quads work.', load: 'Squats and hack squats heavy at 4–10; leg press and lunges 8–15; leg extensions 10–15.', fix: 'Feel it in your lower back instead? Brace harder, try heels-elevated squats or a machine (hack squat, leg press).' },
+  hams: { feel: 'A big stretch at the back of the thighs on RDLs, a cramp-like squeeze on curls, glutes at the top of hip thrusts.', load: 'RDLs heavy at 6–10; leg curls 8–12 controlled; hip thrusts 8–12 heavy.', fix: 'Lower back taking over on RDLs? Shorten the range — stop when your hips stop moving back — and keep the bar touching your legs.' },
+  calves: { feel: 'A deep stretch at the bottom, a cramp at the top.', load: 'Heavy, 8–15 reps, with a 1–2 s pause in the stretch. Bouncing reps build almost nothing.', fix: 'Slow down: full stretch, pause, rise all the way onto your toes.' },
+  core: { feel: 'Abs tighten as your spine curls (crunches, leg raises); anti-rotation moves make you fight twisting.', load: 'Train abs like any muscle: 8–15 reps, add weight when it gets easy. 2–3 sessions a week is plenty.', fix: 'Hip flexors burning on leg raises? Curl your pelvis up toward your ribs instead of just lifting the legs.' },
+  forearms: { feel: 'Grip burning and a forearm pump.', load: 'High reps (12–20) on curls; heavy carries for grip strength.', fix: 'Heavy rows and deadlifts already train grip — add direct work only if forearms lag.' }
+};
+
+// id, name, muscle, equipment, kind (C/I), reps, load, feel, steps (|), mistake
+var EX = [
+  ['bench','Barbell Bench Press','chest','Barbell','C','5–8','Heavy','Chest stretch at the bottom, triceps at lockout.','Pinch shoulder blades down and back, feet planted, slight arch|Lower under control to mid/lower chest, elbows 45–70° from body|Drive up and slightly back toward your face','Bouncing the bar off your chest or flaring elbows to 90°.'],
+  ['incdb','Incline Dumbbell Press','chest','Dumbbells','C','6–10','Moderate–heavy','Upper chest, just under the collarbone.','Set the bench to about 30° — steeper turns it into a shoulder press|Lower the dumbbells to upper-chest level for a deep stretch|Press up and slightly in; don\'t clank them at the top','Bench too steep, so front delts do the work.'],
+  ['dbbench','Flat Dumbbell Press','chest','Dumbbells','C','6–10','Moderate–heavy','Whole chest, with a deeper stretch than the barbell.','Kick the dumbbells up off your knees, shoulder blades pinched|Lower until you feel a big chest stretch, wrists over elbows|Press up in a slight arc','Cutting the range short to lift heavier.'],
+  ['incbb','Incline Barbell Press','chest','Barbell','C','5–8','Heavy','Upper chest and front delts.','Bench at 30°, grip slightly wider than shoulders|Lower to just under the collarbone|Press straight up, keep shoulder blades pinned','Lifting the hips off the bench to finish reps.'],
+  ['machpress','Machine Chest Press','chest','Machine','C','8–12','Moderate–heavy','Chest squeezing hard — safe to push close to failure.','Set the seat so handles line up with mid-chest|Press out without locking shoulders forward|Return slowly until you feel a stretch','Seat too high, so shoulders take over.'],
+  ['dipchest','Chest Dip','chest','Bodyweight / belt','C','6–12','Bodyweight → weighted','Lower chest stretch at the bottom.','Lean your torso forward, elbows slightly out|Lower until upper arms are about parallel to the floor|Push up without fully locking out','Going too deep with shoulders rolling forward — stop if they ache.'],
+  ['cablefly','Cable Fly','chest','Cable','I','10–15','Light–moderate','A stretch across the chest, then a squeeze as hands meet.','Set pulleys at shoulder height, step forward, soft elbows|Open wide until you feel the chest stretch|Hug a big tree — bring hands together and squeeze 1 s','Bending the elbows more each rep so it turns into a press.'],
+  ['pecdeck','Pec Deck','chest','Machine','I','10–15','Moderate','Inner and mid chest squeeze.','Seat so handles are at chest height|Bring arms together with a slight elbow bend|Control back to a full stretch','Letting the stack slam and losing tension.'],
+  ['pushup','Push-Up','chest','Bodyweight','C','10–25','Bodyweight','Chest and triceps; core stays tight.','Hands just wider than shoulders, body in a straight line|Lower until your chest nearly touches the floor|Push up as one unit','Hips sagging or half-reps.'],
+
+  ['deadlift','Deadlift','back','Barbell','C','3–6','Heavy','Hamstrings, glutes and a fully braced back. The lower back should feel tight, never painful.','Bar over mid-foot, hip-width stance, grip just outside your legs|Brace hard, pull the slack out of the bar, chest up|Push the floor away; hips and shoulders rise together; finish with glutes','Rounding the lower back or yanking the bar off the floor.'],
+  ['pullup','Pull-Up','back','Bodyweight / belt','C','5–10','Bodyweight → weighted','Lats — the sides of your back under the armpits.','Hang fully with shoulders slightly pulled down|Drive your elbows down toward your back pockets|Chin over the bar, lower slowly to a full hang','Half reps and kipping.'],
+  ['pulldown','Lat Pulldown','back','Cable','C','8–12','Moderate–heavy','Lats stretching at the top, squeezing at the bottom.','Thighs locked under the pad, grip a bit wider than shoulders|Lean back slightly and pull the bar to your upper chest, leading with elbows|Let your arms stretch fully overhead each rep','Leaning far back and pulling with the biceps.'],
+  ['bbrow','Barbell Row','back','Barbell','C','6–10','Heavy','Mid-back and lats; shoulder blades squeeze together.','Hinge to about 45°, flat back, bar hanging at your knees|Row to your lower ribs, elbows about 45° from the body|Pause, then lower with control','Standing more upright each rep and using momentum.'],
+  ['csrow','Chest-Supported T-Bar Row','back','Machine','C','8–12','Heavy','Pure upper back — no lower back fatigue.','Chest on the pad, arms long, let shoulders stretch forward|Pull elbows back past your torso|Squeeze 1 s, lower slowly','Lifting the chest off the pad to heave the weight.'],
+  ['cablerow','Seated Cable Row','back','Cable','C','8–12','Moderate–heavy','Mid-back and lats, with a stretch at the front.','Sit tall, slight knee bend|Pull the handle to your belly, elbows close to your sides|Reach forward to stretch, keeping the back flat','Rocking the torso back and forth.'],
+  ['dbrow','One-Arm Dumbbell Row','back','Dumbbell','C','8–12','Heavy','Lat on the working side.','Hand and knee on a bench, back flat|Pull the dumbbell toward your hip, not your armpit|Lower to a full stretch','Twisting the torso to swing the weight up.'],
+  ['sapull','Straight-Arm Pulldown','back','Cable','I','12–15','Light–moderate','Lats only — no biceps at all.','Stand facing the cable, arms straight, slight hip hinge|Sweep the bar down to your thighs in an arc|Return overhead to a full lat stretch','Bending the elbows so it turns into a pushdown.'],
+  ['machrow','Machine High Row','back','Machine','C','8–12','Moderate–heavy','Upper lats and rear of the shoulders.','Chest against the pad, grip handles overhead-forward|Pull elbows down and back|Control the return for a stretch','Shrugging the shoulders up to your ears.'],
+  ['shrug','Barbell Shrug','back','Barbell','I','10–15','Heavy','Upper traps (between neck and shoulder).','Stand tall holding the bar at arm\'s length|Shrug straight up toward your ears|Hold 1 s at the top, lower slowly','Rolling the shoulders in circles — it adds nothing.'],
+
+  ['ohp','Overhead Press','shoulders','Barbell','C','5–8','Heavy','Front delts and triceps; glutes and abs braced.','Grip just outside shoulders, squeeze glutes|Press the bar straight up, moving your head back out of the way|Lock out with the bar over mid-foot','Leaning far back so it becomes an incline press.'],
+  ['dbohp','Seated Dumbbell Press','shoulders','Dumbbells','C','8–12','Moderate–heavy','Front and side delts.','Back against an upright bench|Press up until arms are nearly straight|Lower to ear level','Arching off the bench.'],
+  ['lateral','Dumbbell Lateral Raise','shoulders','Dumbbells','I','12–20','Light','Side delts — top/outer shoulder. Not your traps.','Slight forward lean, soft elbows|Raise out to the sides leading with elbows, to shoulder height|Lower slowly over 2–3 seconds','Swinging heavy dumbbells so traps take over.'],
+  ['cablelat','Cable Lateral Raise','shoulders','Cable','I','12–20','Light','Side delt, tension even at the bottom.','Cable at hand height, stand side-on|Raise across and out to shoulder height|Lower slowly behind your body line','Using the body to swing it up.'],
+  ['reardelt','Reverse Pec Deck','shoulders','Machine','I','12–20','Light','Rear delts (back of the shoulder).','Face the pad, handles at shoulder height|Sweep arms back with slightly bent elbows|Stop when arms line up with your body','Squeezing the shoulder blades — that turns it into an upper-back move.'],
+  ['facepull','Face Pull','shoulders','Cable / rope','I','12–20','Light–moderate','Rear delts and upper back; good for shoulder health.','Rope at face height, thumbs toward you|Pull toward your forehead, elbows high, pulling the rope apart|Finish with hands beside your ears','Going so heavy you lean back and row it.'],
+  ['arnold','Arnold Press','shoulders','Dumbbells','C','8–12','Moderate','Front and side delts through a long range.','Start with palms facing you at chin height|Rotate palms forward as you press up|Reverse the rotation on the way down','Rushing the rotation.'],
+  ['uprow','Wide-Grip Upright Row','shoulders','Cable / barbell','C','10–15','Moderate','Side delts and upper traps.','Grip about 1.5× shoulder width|Pull elbows up and out to lower-chest height|Lower under control','Pulling to chin height with a narrow grip — can pinch the shoulder.'],
+
+  ['bbcurl','Barbell Curl','biceps','Barbell / EZ bar','I','8–12','Moderate','Both biceps squeezing at the top.','Stand tall, elbows at your sides|Curl without moving the elbows forward|Lower in 2–3 seconds to straight arms','Swinging the hips to get it up.'],
+  ['inccurl','Incline Dumbbell Curl','biceps','Dumbbells','I','10–15','Light–moderate','Big stretch in the biceps at the bottom (long head).','Bench at 45–60°, arms hanging behind you|Curl up keeping upper arms still|Lower all the way','Letting the shoulders roll forward to shorten the stretch.'],
+  ['hammer','Hammer Curl','biceps','Dumbbells','I','8–12','Moderate','Outer arm and forearm (brachialis).','Palms facing each other|Curl up, elbows pinned|Lower with control','Cheating with the shoulders.'],
+  ['preacher','Preacher Curl','biceps','EZ bar / machine','I','8–12','Moderate','Biceps hard at the bottom half.','Armpits snug on the pad|Curl up without lifting elbows|Lower slowly to nearly straight','Dropping fast and bouncing at the bottom — elbow risk.'],
+  ['cablecurl','Cable Curl','biceps','Cable','I','10–15','Moderate','Constant biceps tension.','Stand close to the low pulley|Curl to the top and squeeze|Control the way down','Leaning back.'],
+  ['bayesian','Bayesian Cable Curl','biceps','Cable','I','10–15','Light–moderate','Long-head stretch with the arm behind you.','Face away from a low cable, arm behind the body|Curl forward keeping the elbow back|Return to a full stretch','Letting the elbow drift forward.'],
+
+  ['cgbench','Close-Grip Bench Press','triceps','Barbell','C','5–8','Heavy','Triceps and inner chest.','Grip about shoulder width — not narrower|Lower to the lower chest, elbows tucked|Press and lock out hard','Grip too narrow, which strains the wrists.'],
+  ['dips','Triceps Dip','triceps','Bodyweight / belt','C','6–10','Heavy','Back of the arms, chest secondary.','Stay upright, elbows pointing back|Lower until elbows are at about 90°|Press to full lockout','Shoulders shrugging up toward the ears.'],
+  ['skull','Skull Crusher','triceps','EZ bar','I','8–12','Moderate','Triceps, especially the long head.','Lie down, bar over your forehead, arms angled slightly back|Bend only at the elbows, lower behind your head|Extend back up','Elbows flaring wide.'],
+  ['ohext','Overhead Cable Extension','triceps','Cable / rope','I','10–15','Moderate','A long stretch in the triceps (long head).','Face away from the cable, rope behind your head|Extend arms overhead|Lower for a deep stretch, elbows pointing forward','Elbows flaring out to the sides.'],
+  ['rope','Rope Pushdown','triceps','Cable','I','10–15','Moderate','Back of the arms near the elbow.','Elbows pinned to your sides|Push down and spread the rope at the bottom|Return to about 90°','Leaning over and using body weight.'],
+  ['barpush','Straight-Bar Pushdown','triceps','Cable','I','8–12','Moderate–heavy','All three heads of the triceps.','Overhand grip, elbows at your sides|Push to full lockout|Control the return','Elbows drifting forward.'],
+  ['jm','JM Press','triceps','Barbell / Smith','C','6–10','Heavy','Triceps with heavy load.','Close grip, lower the bar toward your chin/upper chest|Let the elbows travel forward slightly|Press back up','Going heavy before learning the groove.'],
+
+  ['squat','Back Squat','quads','Barbell','C','4–8','Heavy','Quads, glutes and a tight core.','Bar on upper back, feet shoulder width, toes slightly out|Brace, sit down between your heels, knees track over toes|Drive up, chest staying up','Knees caving in or lower back rounding at the bottom.'],
+  ['fsquat','Front Squat','quads','Barbell','C','4–8','Heavy','Quads more than back squats; upper back holds the bar.','Bar on front delts, elbows high|Squat straight down, torso upright|Stand up keeping elbows high','Elbows dropping so the bar rolls forward.'],
+  ['legpress','Leg Press','quads','Machine','C','8–15','Heavy','Quads (feet low) or glutes (feet high).','Feet shoulder width, mid-platform|Lower until knees are near your chest, lower back stays down|Press without locking the knees','Hips peeling off the seat at the bottom.'],
+  ['hack','Hack Squat','quads','Machine','C','6–12','Heavy','Quads, deep in the hole.','Back flat on the pad, feet mid-platform|Lower as deep as you can control|Drive up through the whole foot','Half-depth reps.'],
+  ['bss','Bulgarian Split Squat','quads','Dumbbells','C','8–12 / leg','Moderate','Front-leg quads and glutes.','Rear foot on a bench, front foot about a stride ahead|Drop the back knee straight down|Push through the front foot','Front foot too close, so the knee takes all the stress.'],
+  ['legext','Leg Extension','quads','Machine','I','10–15','Moderate','Front of the thigh, burning at the top.','Pad on the lower shin, knees lined up with the pivot|Extend fully and squeeze 1 s|Lower slowly','Swinging the weight up.'],
+  ['lunge','Walking Lunge','quads','Dumbbells','C','10–12 / leg','Moderate','Quads and glutes.','Long step forward|Lower the back knee toward the floor|Drive through the front heel into the next step','Short choppy steps.'],
+
+  ['rdl','Romanian Deadlift','hams','Barbell','C','6–10','Heavy','A big hamstring stretch.','Soft knees, push your hips straight back|Bar slides down the thighs; stop when the hips can\'t go further back (usually mid-shin)|Squeeze glutes to stand','Turning it into a squat, or rounding the back to touch the floor.'],
+  ['seatedcurl','Seated Leg Curl','hams','Machine','I','8–12','Moderate–heavy','Hamstrings, stretched at the hip — slightly better for growth than lying curls.','Lean forward a little, thigh pad snug|Curl down fully|Return slowly to straight legs','Letting the weight yank your legs back up.'],
+  ['lyingcurl','Lying Leg Curl','hams','Machine','I','8–12','Moderate','Hamstring belly squeezing.','Hips pressed into the pad|Curl heels toward your glutes|Lower with control','Hips lifting off the pad.'],
+  ['hipthrust','Hip Thrust','hams','Barbell','C','8–12','Heavy','Glutes at the top.','Upper back on a bench, bar padded over your hips|Drive hips up until the body is flat, chin tucked|Squeeze 1 s, lower','Arching the lower back instead of using glutes.'],
+  ['goodmorning','Good Morning','hams','Barbell','C','8–10','Moderate','Hamstrings and lower back.','Bar on your upper back, soft knees|Hinge forward, hips back, back flat|Stand by squeezing glutes','Going heavy too early.'],
+  ['nordic','Nordic Curl','hams','Bodyweight','I','4–8','Bodyweight','Intense hamstring work.','Kneel with ankles anchored|Lower forward as slowly as you can|Catch yourself, push back up','Bending at the hips to cheat.'],
+  ['abduction','Hip Abduction','hams','Machine','I','12–20','Moderate','Upper/side glutes.','Sit tall or lean slightly forward|Push knees out|Control back in','Letting the stack bang between reps.'],
+  ['kickback','Cable Glute Kickback','hams','Cable','I','12–15','Light–moderate','Glute on the working side.','Ankle strap, slight forward lean|Kick back and up, squeezing the glute|Return slowly','Arching the lower back to get height.'],
+
+  ['scalf','Standing Calf Raise','calves','Machine','I','8–15','Heavy','Calves — deep stretch, then a cramp at the top.','Balls of feet on the edge|Lower to a full stretch, pause 1–2 s|Rise onto your toes','Bouncing quick half-reps.'],
+  ['seatcalf','Seated Calf Raise','calves','Machine','I','12–20','Moderate','Lower calf (soleus).','Pad on your knees, balls of feet on the edge|Full stretch, pause|Rise all the way','Rushing it.'],
+  ['lpcalf','Leg Press Calf Raise','calves','Machine','I','10–15','Heavy','Calves with lots of load.','Balls of feet on the platform edge, knees locked softly|Let the platform push your toes back for a stretch|Press through the big toe','Bending the knees to help.'],
+
+  ['hlr','Hanging Leg Raise','core','Bodyweight','I','8–15','Bodyweight','Lower abs as the pelvis curls up.','Dead hang, legs together|Raise legs and curl your pelvis toward your ribs|Lower slowly without swinging','Swinging and only using hip flexors.'],
+  ['cablecrunch','Cable Crunch','core','Cable','I','10–15','Moderate','Abs crunching hard.','Kneel, rope beside your head|Curl the spine, bringing ribs toward hips|Return slowly','Hinging at the hips instead of curling.'],
+  ['abwheel','Ab Wheel Rollout','core','Ab wheel','I','6–12','Bodyweight','Whole abs resisting the stretch.','Kneel, ribs down, glutes tight|Roll out as far as you can without the back sagging|Pull back with your abs','Lower back sagging.'],
+  ['plank','Plank','core','Bodyweight','I','30–60 s','Bodyweight','Abs and glutes braced.','Elbows under shoulders|Squeeze glutes, ribs down, straight line|Breathe and hold','Hips piked up or sagging.'],
+  ['pallof','Pallof Press','core','Cable','I','10–12 / side','Light–moderate','Obliques fighting the twist.','Stand side-on to the cable, handle at chest|Press straight out and hold 2 s|Return without rotating','Letting the torso rotate.'],
+  ['deadbug','Dead Bug','core','Bodyweight','I','8–12 / side','Bodyweight','Deep abs; lower back stays pressed down.','Lie down, arms up, knees at 90°|Extend opposite arm and leg slowly|Return and switch','Lower back arching off the floor.'],
+
+  ['wristcurl','Wrist Curl','forearms','Dumbbells / barbell','I','12–20','Light','Inner forearm.','Forearms on your thighs, palms up|Let the weight roll to your fingertips|Curl the wrist up','Using the whole arm.'],
+  ['revcurl','Reverse Curl','forearms','EZ bar','I','10–15','Light–moderate','Top of the forearm.','Overhand grip, elbows pinned|Curl up|Lower slowly','Wrists bending back.'],
+  ['farmer','Farmer\'s Carry','forearms','Dumbbells','C','30–40 m','Heavy','Grip, traps and core.','Pick up heavy dumbbells|Walk tall with short quick steps|Set them down under control','Leaning to one side.'],
+
+  // ---- calisthenics ----
+  ['inclinepu','Incline Push-Up','chest','Bodyweight · bench','C','10–20','Bodyweight','Chest and triceps — the easiest push-up step.','Hands on a bench or bar, body straight|Lower your chest to the edge|Push away as one unit','Hips sagging. The lower the surface, the harder it gets.'],
+  ['diamond','Diamond Push-Up','triceps','Bodyweight','C','8–15','Bodyweight','Triceps and inner chest.','Hands together under your chest, thumbs and index fingers touching|Lower with elbows close to your ribs|Press up to lockout','Elbows flaring out wide.'],
+  ['archerpu','Archer Push-Up','chest','Bodyweight','C','5–10 / side','Bodyweight','One side of the chest doing most of the work.','Hands very wide|Shift down toward one hand while the other arm stays straight|Push back to the middle, alternate sides','Bending the straight arm to help.'],
+  ['ppp','Pseudo Planche Push-Up','shoulders','Bodyweight','C','5–10','Bodyweight','Front delts, chest and core under heavy leverage.','Hands by your hips, fingers turned out, lean shoulders past your hands|Lower while keeping the lean|Press up, staying leaned forward','Losing the lean so it becomes a normal push-up.'],
+  ['chinup','Chin-Up','back','Pull-up bar','C','5–12','Bodyweight → weighted','Lats and biceps together.','Palms facing you, shoulder width|Pull until your chin clears the bar|Lower to a full hang','Kicking the legs.'],
+  ['invrow','Inverted Row','back','Bar / rings','C','8–15','Bodyweight','Upper back — the first step toward pull-ups.','Lie under a bar at hip height, heels on the floor, body straight|Pull your chest to the bar|Lower slowly to straight arms','Hips sagging. Feet higher = harder.'],
+  ['negpull','Negative Pull-Up','back','Pull-up bar','C','3–6','Bodyweight','Lats under a slow stretch.','Jump or step up so your chin is over the bar|Lower yourself over 5 seconds|Reset and repeat','Dropping fast — the slow lowering is the whole point.'],
+  ['archerpull','Archer Pull-Up','back','Pull-up bar','C','3–6 / side','Bodyweight','One lat doing most of the work.','Wide grip|Pull toward one hand while the other arm straightens|Lower, alternate sides','Turning it into a regular pull-up.'],
+  ['muscleup','Muscle-Up','back','Pull-up bar','C','1–5','Bodyweight','Lats, chest and triceps — an explosive full pull then push.','Start with 10+ strict pull-ups; use a false grip|Pull explosively to your lower chest, lean over the bar|Press to lockout on top, lower under control','Chicken-winging one arm over at a time.'],
+  ['pikepu','Pike Push-Up','shoulders','Bodyweight','C','8–12','Bodyweight','Shoulders and triceps — handstand training starts here.','Hips high in an upside-down V, hands shoulder width|Lower your head toward a spot in front of your hands|Press back up','Lowering straight down, which shifts work to the chest.'],
+  ['elevpike','Elevated Pike Push-Up','shoulders','Bodyweight · box','C','6–10','Bodyweight','Shoulders with more of your weight on them.','Feet on a box, hips stacked over shoulders|Lower your head in front of your hands|Press up','Feet too low to make it harder.'],
+  ['wallhs','Wall Handstand Hold','shoulders','Wall','I','20–45 s','Bodyweight','Shoulders pushing tall, abs and glutes tight.','Walk your feet up the wall, chest facing it|Push the floor away, body straight|Breathe and hold, walk down when form breaks','Banana back — squeeze glutes and pull ribs in.'],
+  ['wallhspu','Wall Handstand Push-Up','shoulders','Wall','C','3–8','Bodyweight','Shoulders and triceps carrying full bodyweight.','Kick up into a handstand, back to the wall|Lower your head to the floor (or a pad)|Press back up to straight arms','Going deeper than you can press out of — start with a pad.'],
+  ['freehs','Freestanding Handstand','shoulders','Bodyweight','I','5–30 s','Bodyweight','Balance in the fingers, shoulders fully open.','Kick up gently, hands shoulder width|Balance by pressing fingertips (falling forward) or palms (falling back)|Practise often in short tries','Over-kicking. Learn to cartwheel out safely first.'],
+  ['bwsquat','Bodyweight Squat','quads','Bodyweight','C','15–30','Bodyweight','Quads and glutes.','Feet shoulder width|Sit down deep, knees track over toes|Stand up tall','Heels lifting off the floor.'],
+  ['boxpistol','Box Pistol Squat','quads','Bodyweight · box','C','6–10 / leg','Bodyweight','Single-leg quad strength.','Stand on one leg in front of a box|Sit down slowly to the box, other leg forward|Stand without rocking','Dropping onto the box.'],
+  ['shrimp','Shrimp Squat','quads','Bodyweight','C','5–8 / leg','Bodyweight','Front-leg quad and glute.','Hold one foot behind you|Lower until the back knee touches the floor|Drive up through the standing leg','Leaning so far forward that you lose balance.'],
+  ['pistol','Pistol Squat','quads','Bodyweight','C','3–8 / leg','Bodyweight','Quads, glutes and balance.','Stand on one leg, other leg straight out front|Squat all the way down, arms forward for balance|Stand up without bouncing','Knee caving in.'],
+  ['glutebridge','Single-Leg Glute Bridge','hams','Bodyweight','I','10–15 / leg','Bodyweight','Glute on the working leg.','Lie down, one foot planted, other leg up|Drive the hips up until the body is straight|Squeeze 1 s at the top, lower','Arching the lower back.'],
+  ['benchdip','Bench Dip','triceps','Bodyweight · bench','C','10–20','Bodyweight','Back of the arms.','Hands on a bench behind you, legs out|Lower until elbows reach about 90°|Press up','Going too deep and straining the front of the shoulder.'],
+  ['hollow','Hollow Body Hold','core','Bodyweight','I','20–45 s','Bodyweight','Whole front of the core; the base of every calisthenics skill.','Lie down, press your lower back into the floor|Lift shoulders and legs, arms overhead|Hold without the back lifting','Lower back peeling off the floor — bend the knees to make it easier.'],
+  ['hkr','Hanging Knee Raise','core','Pull-up bar','I','10–15','Bodyweight','Lower abs.','Dead hang|Bring your knees to your chest, curling the pelvis|Lower slowly, no swinging','Swinging for momentum.'],
+  ['lsit','L-Sit','core','Bars / floor','I','10–30 s','Bodyweight','Abs, hip flexors and triceps.','Hands on parallettes or the floor beside your hips|Press down and lift your legs straight out|Hold, keep shoulders pushed down','Shrugging. Start with one leg or bent knees (tuck L-sit).'],
+  ['dragon','Dragon Flag','core','Bodyweight · bench','I','3–8','Bodyweight','Entire core under huge leverage.','Lie on a bench, grip behind your head|Lift your body to vertical on your upper back|Lower as a straight plank as slowly as you can','Bending at the hips. Start with negatives only.']
+];
+
+var EXO = {};
+var EXLIST = EX.map(function (a) {
+  var o = { id: a[0], name: a[1], muscle: a[2], equip: a[3], kind: a[4], reps: a[5], load: a[6], feel: a[7], steps: a[8].split('|'), mistake: a[9] };
+  var first = parseInt(a[5], 10);
+  o.rest = o.kind === 'C' ? (first <= 5 ? 180 : 120) : 75;
+  o.startReps = isNaN(first) ? 10 : first;
+  var nums = a[5].match(/\d+/g) || ['10'];
+  o.topReps = parseInt(nums[nums.length - 1], 10);
+  o.timed = / s$/.test(a[5]);
+  o.cali = /Bodyweight|Pull-up bar|Bar \/ rings|Wall|Bars \/ floor|Ab wheel/.test(a[3]);
+  EXO[o.id] = o;
+  return o;
+});
+
+var MNAME = {};
+MUSCLES.forEach(function (m) { MNAME[m[0]] = m[1]; });
+MNAME.cali = 'Calisthenics';
+
+GUIDES.cali = { feel: 'Whole-body tension: squeeze glutes and abs on every rep so your body moves as one solid piece.', load: 'You progress by leverage, not plates: move to a harder variation once 3 × 12 (or 3 × 30 s holds) is clean. Strength skills live at 3–8 reps; endurance at 12–20.', fix: 'Can\'t do one rep yet? Use slow negatives (5 s lowering), a resistance band, or the step below on the ladder.' };
+
+var LADDERS = [
+  { k: 'push', name: 'Push path', steps: ['inclinepu','pushup','diamond','archerpu','ppp'] },
+  { k: 'pull', name: 'Pull path', steps: ['invrow','negpull','pullup','archerpull','muscleup'] },
+  { k: 'legs', name: 'Legs path', steps: ['bwsquat','bss','boxpistol','shrimp','pistol'] },
+  { k: 'core', name: 'Core path', steps: ['hollow','hkr','hlr','lsit','dragon'] },
+  { k: 'hand', name: 'Handstand path', steps: ['pikepu','elevpike','wallhs','wallhspu','freehs'] }
+];
+var LADDER_OF = {};
+LADDERS.forEach(function (L) { L.steps.forEach(function (id, i) { LADDER_OF[id] = { L: L, i: i }; }); });
+
+function defW(eq) {
+  if (/Bodyweight/.test(eq)) return 0;
+  if (/Barbell|EZ|Smith/.test(eq)) return 40;
+  if (/Dumbbell/.test(eq)) return 12.5;
+  if (/Cable/.test(eq)) return 20;
+  if (/Machine/.test(eq)) return 30;
+  return 10;
+}
+
+var SPLITS = [
+  { id: 'fb', name: 'Full Body', freq: 3, level: 'Beginner', schedule: 'Mon · Wed · Fri', who: 'Best for beginners or busy weeks. Every muscle gets trained 3× a week with a few hard sets each time.', days: [
+    { name: 'Day A', ex: ['squat','bench','bbrow','lateral','inccurl'] },
+    { name: 'Day B', ex: ['rdl','incdb','pulldown','rope','hlr'] },
+    { name: 'Day C', ex: ['legpress','ohp','cablerow','seatedcurl','hammer'] } ] },
+  { id: 'ul', name: 'Upper / Lower', freq: 4, level: 'Beginner–Intermediate', schedule: 'Mon Tue · Thu Fri', who: 'Hits every muscle twice a week with time to recover. The most popular split for steady size and strength.', days: [
+    { name: 'Upper A', ex: ['bench','csrow','dbohp','pulldown','rope','inccurl'] },
+    { name: 'Lower A', ex: ['squat','rdl','legext','seatedcurl','scalf'] },
+    { name: 'Upper B', ex: ['incdb','pullup','cablerow','lateral','ohext','hammer'] },
+    { name: 'Lower B', ex: ['hack','hipthrust','lyingcurl','bss','seatcalf','hlr'] } ] },
+  { id: 'ppl', name: 'Push / Pull / Legs', freq: 6, level: 'Intermediate–Advanced', schedule: 'Run twice: Mon–Sat', who: 'High frequency and volume. Great if you enjoy the gym 6 days a week and recover well — run it 3 days for a lighter version.', days: [
+    { name: 'Push', ex: ['bench','dbohp','incdb','lateral','rope','ohext'] },
+    { name: 'Pull', ex: ['pullup','bbrow','cablerow','facepull','bbcurl','hammer'] },
+    { name: 'Legs', ex: ['squat','rdl','legpress','seatedcurl','scalf'] } ] },
+  { id: 'pplul', name: 'PPL + Upper / Lower', freq: 5, level: 'Intermediate', schedule: 'Mon–Fri', who: 'Five days: a push/pull/legs block, then upper and lower. Every muscle about twice a week.', days: [
+    { name: 'Push', ex: ['bench','ohp','cablefly','lateral','skull'] },
+    { name: 'Pull', ex: ['deadlift','pulldown','dbrow','reardelt','bbcurl'] },
+    { name: 'Legs', ex: ['squat','rdl','legext','seatedcurl','scalf'] },
+    { name: 'Upper', ex: ['incdb','csrow','dbohp','sapull','rope','inccurl'] },
+    { name: 'Lower', ex: ['hack','hipthrust','lyingcurl','bss','seatcalf'] } ] },
+  { id: 'arnold', name: 'Arnold Split', freq: 6, level: 'Advanced', schedule: 'Run twice: Mon–Sat', who: 'Chest & back together, shoulders & arms together, then legs — run twice a week. Demanding; for experienced lifters.', days: [
+    { name: 'Chest & Back', ex: ['bench','pullup','incdb','bbrow','cablefly','sapull'] },
+    { name: 'Shoulders & Arms', ex: ['ohp','lateral','reardelt','cgbench','bbcurl','ohext','inccurl'] },
+    { name: 'Legs', ex: ['squat','rdl','legpress','seatedcurl','scalf','cablecrunch'] } ] },
+  { id: 'cali', name: 'Calisthenics', freq: 4, level: 'All levels', schedule: 'Mon Tue · Thu Fri', who: 'No gym needed — a pull-up bar, the floor and a wall. Swap any move for the step on its ladder that matches your level (set them in Coach).', days: [
+    { name: 'Push', ex: ['pikepu','dips','pushup','diamond','hollow'] },
+    { name: 'Pull', ex: ['pullup','invrow','chinup','hlr'] },
+    { name: 'Legs & Core', ex: ['bss','boxpistol','nordic','glutebridge','plank'] },
+    { name: 'Skills', ex: ['wallhs','lsit','archerpu','negpull','dragon'] } ] },
+  { id: 'hybrid', name: 'Gym + Calisthenics', freq: 4, level: 'Intermediate', schedule: 'Mon Tue · Thu Fri', who: 'Upper/lower with barbell strength work, finished with bodyweight moves and skills.', days: [
+    { name: 'Upper Strength', ex: ['bench','pullup','ohp','invrow','dips','hollow'] },
+    { name: 'Lower Strength', ex: ['squat','rdl','pistol','nordic','hlr'] },
+    { name: 'Upper Skills', ex: ['incdb','chinup','pikepu','archerpu','lsit','wallhs'] },
+    { name: 'Lower & Core', ex: ['hack','hipthrust','shrimp','seatcalf','dragon'] } ] },
+  { id: 'bro', name: 'Bro Split', freq: 5, level: 'Intermediate–Advanced', schedule: 'Mon–Fri', who: 'One muscle group per day, each trained once a week. Fun and focused, but hitting muscles twice a week is usually better for growth.', days: [
+    { name: 'Chest', ex: ['bench','incdb','machpress','cablefly','dipchest'] },
+    { name: 'Back', ex: ['deadlift','pullup','bbrow','cablerow','sapull'] },
+    { name: 'Shoulders', ex: ['ohp','lateral','cablelat','reardelt','shrug'] },
+    { name: 'Arms', ex: ['cgbench','bbcurl','skull','inccurl','rope','hammer'] },
+    { name: 'Legs', ex: ['squat','legpress','rdl','legext','seatedcurl','scalf'] } ] }
+];
+
+var TIERS = {
+  strong: { label: 'Strong evidence', fg: '#0F1012', bg: '#C8F031' },
+  some: { label: 'Some evidence', fg: '#0F1012', bg: '#7CC8FF' },
+  situational: { label: 'Situational', fg: '#0F1012', bg: '#C9B8FF' },
+  weak: { label: 'Weak / skip', fg: '#0F1012', bg: '#FF9F5A' }
+};
+
+var SUPPS = [
+  { id: 'creatine', name: 'Creatine Monohydrate', tier: 'strong', short: 'Strength, reps and muscle gain', benefits: ['A few more reps and more strength on heavy sets', 'Faster muscle gain over months of training', 'Some evidence for brain and cognition benefits'], sides: ['1–2 kg water weight stored inside muscle — not fat or bloating', 'Stomach upset if you take 10 g+ in one go', 'The hair-loss link comes from one small study and hasn\'t been confirmed'], dose: '3–5 g every day, any time of day. Loading isn\'t needed — it just saturates faster.', note: 'The most-researched sports supplement. Plain monohydrate is all you need; HCl or "buffered" versions aren\'t better.' },
+  { id: 'whey', name: 'Whey Protein', tier: 'strong', short: 'Hit your daily protein easily', benefits: ['Helps reach 1.6–2.2 g protein per kg bodyweight a day', 'Fast-digesting and convenient after training', 'Supports muscle growth and recovery when total protein is low'], sides: ['Bloating or gas if lactose intolerant — choose whey isolate', 'Not needed if your meals already hit your protein target'], dose: '20–40 g per serving, as many as needed to reach your daily protein goal.', note: 'It\'s food, not magic: total daily protein matters far more than timing.' },
+  { id: 'caffeine', name: 'Caffeine', tier: 'strong', short: 'More power, less perceived effort', benefits: ['More strength, power and endurance', 'Workouts feel easier', 'Sharper focus'], sides: ['Jitters, anxiety, faster heart rate', 'Wrecks sleep if taken within about 8 hours of bed', 'Tolerance builds — keep doses moderate'], dose: '3–6 mg per kg bodyweight, 30–60 min before training (about 200–300 mg at 70 kg). Stay under 400 mg a day total.', note: 'A cup or two of coffee works as well as most pills.' },
+  { id: 'betaalanine', name: 'Beta-Alanine', tier: 'some', short: 'Better high-rep and 1–4 min efforts', benefits: ['More reps on sets lasting 1–4 minutes', 'Helps with sprints and circuits'], sides: ['Harmless tingling/itchy skin (paresthesia) — split the dose to reduce it'], dose: '3.2–6.4 g a day in split doses. Works after 2–4 weeks of daily use.', note: 'Little benefit for heavy low-rep sets.' },
+  { id: 'citrulline', name: 'Citrulline Malate', tier: 'some', short: 'Possibly more reps and a better pump', benefits: ['May add a rep or two on later sets', 'Better blood flow and pump', 'May reduce soreness'], sides: ['Occasional mild stomach upset'], dose: '6–8 g citrulline malate 30–60 min before training.', note: 'Often underdosed in pre-workouts — check the label.' },
+  { id: 'casein', name: 'Casein Protein', tier: 'some', short: 'Slow protein before bed', benefits: ['Slow-digesting — steady protein release overnight', 'Helps hit daily protein'], sides: ['Same dairy issues as whey', 'Thick texture; some find it heavy at night'], dose: '30–40 g before bed, if it helps reach your daily target.', note: 'Greek yoghurt or milk does the same job.' },
+  { id: 'preworkout', name: 'Pre-Workout Blends', tier: 'situational', short: 'Mostly caffeine plus extras', benefits: ['Energy and focus (from the caffeine)', 'May include citrulline and beta-alanine'], sides: ['Tingling, crashes, poor sleep, stomach issues', '"Proprietary blends" hide doses — often underdosed or stacked with too much caffeine'], dose: 'Half a scoop first to test tolerance. Check total caffeine per serving.', note: 'Buying caffeine + citrulline separately is cheaper and you control the dose.' },
+  { id: 'electrolytes', name: 'Electrolytes', tier: 'situational', short: 'For heavy sweaters and hot weather', benefits: ['Replaces sodium and potassium lost in sweat', 'Helps prevent cramps and fatigue in long or hot sessions'], sides: ['Extra sodium is a concern with high blood pressure — check with a doctor'], dose: 'One serving in water during long sessions, runs, or humid outdoor training.', note: 'Unnecessary for a normal 1-hour gym session in air-con.' },
+  { id: 'fishoil', name: 'Fish Oil (Omega-3)', tier: 'some', short: 'Heart and joint health', benefits: ['Supports heart health', 'May reduce joint stiffness and soreness'], sides: ['Fishy burps, loose stools', 'Thins the blood at high doses — take care if on blood thinners'], dose: '1–3 g combined EPA + DHA a day, with meals.', note: 'Eating oily fish twice a week gives similar benefits.' },
+  { id: 'vitd', name: 'Vitamin D3', tier: 'situational', short: 'Only useful if you\'re low', benefits: ['Supports bones, immunity and muscle function when deficient'], sides: ['Megadosing for months can raise blood calcium — don\'t overdo it'], dose: '1,000–2,000 IU a day with a meal containing fat. A blood test tells you if you need it.', note: 'Common in people who are mostly indoors.' },
+  { id: 'magnesium', name: 'Magnesium', tier: 'situational', short: 'Sleep and cramps, if low', benefits: ['May improve sleep quality if your intake is low', 'May reduce muscle cramps'], sides: ['Diarrhoea, especially with oxide or citrate forms'], dose: '200–400 mg magnesium glycinate in the evening.', note: 'Nuts, seeds, beans and leafy greens are good food sources.' },
+  { id: 'ashwagandha', name: 'Ashwagandha', tier: 'some', short: 'Stress and possibly small strength gains', benefits: ['May lower stress and improve sleep', 'Small strength and recovery gains in some studies'], sides: ['Stomach upset and drowsiness', 'Rare reports of liver injury', 'Avoid if pregnant or with thyroid or autoimmune conditions'], dose: '300–600 mg root extract (e.g. KSM-66) a day.', note: 'Talk to a doctor first if you take any medication.' },
+  { id: 'gainer', name: 'Mass Gainer', tier: 'situational', short: 'Easy calories for hard gainers', benefits: ['Adds 500–1,000+ calories per shake'], sides: ['Lots of sugar; bloating', 'Easy to gain fat if you overdo it'], dose: 'Only if you can\'t eat enough food to gain weight.', note: 'Blending oats, milk, banana, peanut butter and whey is cheaper and better.' },
+  { id: 'multi', name: 'Multivitamin', tier: 'situational', short: 'Covers gaps in a poor diet', benefits: ['Insurance against micronutrient gaps'], sides: ['Little benefit if you already eat varied whole foods'], dose: 'One a day with food.', note: 'No direct effect on muscle or strength.' },
+  { id: 'bcaa', name: 'BCAAs', tier: 'weak', short: 'Not needed with enough protein', benefits: ['Can taste nice in water during training'], sides: ['No extra muscle if your daily protein is adequate — mostly wasted money'], dose: 'Skip it; spend the money on whey or food.', note: 'Whole protein already contains all the BCAAs (and the other essential amino acids).' },
+  { id: 'fatburner', name: 'Fat Burners', tier: 'weak', short: 'Tiny effect, real risks', benefits: ['Small appetite drop or energy boost — mostly from caffeine'], sides: ['Racing heart, anxiety, insomnia', 'Some products have been found to contain banned or unsafe ingredients'], dose: 'Not recommended. A calorie deficit does the actual fat loss.', note: 'If you try one, choose a third-party tested product and check the caffeine dose.' }
+];
+
+function fmt(s) {
+  var m = Math.floor(s / 60), r = s % 60;
+  return m + ':' + (r < 10 ? '0' : '') + r;
+}
+function fmtW(w) { return (w % 1 === 0) ? String(w) : w.toFixed(1); }
+
+
+// ================= APP =================
+var APP_NAME = 'Setwise';
+var ACCENT = '#C8F031';
+var STORE_KEY = 'setwise-v1';
+
+function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+var uidN = Date.now();
+function makeItem(id) {
+  var e = EXO[id], w = defW(e.equip), sets = [];
+  // reuse last logged weights/reps for this exercise if we have them
+  var last = lastLog(id);
+  for (var i = 0; i < 3; i++) {
+    var ls = last && last.sets[i];
+    sets.push({ w: ls ? ls.w : w, r: ls ? ls.r : e.startReps, done: false });
+  }
+  uidN += 1;
+  return { uid: uidN, ex: id, rest: e.rest, sets: sets };
+}
+function buildDay(ids) { return ids.filter(function (id) { return !!EXO[id]; }).map(makeItem); }
+
+function defaults() {
+  return {
+    tab: 'workout', filter: 'all', q: '', detail: null, openSplit: 'ul', openSupp: 'creatine', tier: 'all',
+    workoutTitle: 'Upper A', workout: null, startedAt: null,
+    timer: { endAt: 0, total: 0, uid: null, running: false, finished: false },
+    profile: { h: '', w: '', age: '', tw: '', sex: 'm', exp: 'beginner', days: 4, goal: 'muscle', lift: 'bench', liftW: 60, liftR: 8, levels: { push: 1, pull: 1, legs: 1, core: 1, hand: 0 } },
+    history: []
+  };
+}
+
+var S = defaults();
+try {
+  var saved = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
+  if (saved) { S = Object.assign(defaults(), saved); S.profile = Object.assign(defaults().profile, saved.profile || {}); S.detail = null; }
+} catch (err) { /* storage unavailable: start fresh */ }
+if (!S.workout) S.workout = buildDay(['bench', 'csrow', 'dbohp', 'pulldown', 'rope', 'inccurl']);
+S.workout = S.workout.filter(function (it) { return !!EXO[it.ex]; });
+
+function save() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(S)); } catch (err) { /* ignore */ }
+}
+
+function lastLog(id) {
+  var hs = (S && S.history) || [];
+  for (var i = 0; i < hs.length; i++) {
+    var items = hs[i].items || [];
+    for (var j = 0; j < items.length; j++) if (items[j].ex === id) return items[j];
+  }
+  return null;
+}
+
+function findItem(uid) { return S.workout.find(function (x) { return x.uid === uid; }); }
+function timerLeft() { return Math.max(0, Math.ceil((S.timer.endAt - Date.now()) / 1000)); }
+
+// ---------- coach maths ----------
+var GOALS = { muscle: 'Build muscle', fat: 'Lose fat', strength: 'Get stronger', cali: 'Calisthenics skills', general: 'General fitness' };
+var TIPS = {
+  muscle: ['Gain slowly: about 0.25–0.5 kg a week is mostly muscle; faster is mostly fat.', 'Do 10–20 hard sets per muscle per week, most within 1–3 reps of failure.', 'Weigh yourself 3–4 mornings a week and watch the weekly average, not single days.'],
+  fat: ['Keep lifting heavy — it tells your body to hold on to muscle while you diet.', 'Aim for 8,000–10,000 steps a day; walking burns more than you\'d think.', 'Lose 0.5–1% of bodyweight a week. Faster usually costs muscle.', 'Keep protein high and fill up on vegetables to control hunger.'],
+  strength: ['Build around squat, bench, deadlift and overhead press, 2–3 times a week each.', 'Rest 3–5 minutes on heavy sets — strength needs full recovery.', 'Most main-lift sets at 3–6 reps; accessories at 8–12.'],
+  cali: ['Practise skills (handstand, L-sit) at the start of a session while you\'re fresh.', 'Grease the groove: a few easy sets of pull-ups or push-ups through the day build reps fast.', 'Warm up wrists and shoulders first — wrist circles and scapula push-ups.', 'Once 3 × 12 is easy, move up a variation instead of chasing 50-rep sets.'],
+  general: ['Mix 2–4 strength sessions with about 150 minutes of moderate cardio a week.', 'Pick exercises you enjoy — consistency beats the perfect plan.', 'Walk daily and sleep 7–9 hours.']
+};
+
+function coach() {
+  var p = S.profile;
+  var H = parseFloat(p.h), Wt = parseFloat(p.w), AGE = parseFloat(p.age), TW = parseFloat(p.tw);
+  var co = { valid: H > 100 && H < 250 && Wt > 30 && Wt < 300 && AGE >= 13 && AGE < 100 };
+  if (!co.valid) return co;
+  var bmi = Wt / Math.pow(H / 100, 2);
+  var bmr = 10 * Wt + 6.25 * H - 5 * AGE + (p.sex === 'm' ? 5 : -161);
+  var tdee = bmr * ({ 2: 1.375, 3: 1.45, 4: 1.55, 5: 1.65, 6: 1.75 }[p.days] || 1.55);
+  var adj = { muscle: 250, fat: -500, strength: 150, cali: 0, general: 0 }[p.goal];
+  var hasTW = TW > 30 && TW < 300 && Math.abs(TW - Wt) >= 0.5;
+  if ((p.goal === 'cali' || p.goal === 'general') && hasTW) adj = TW < Wt ? -300 : 200;
+  var maint = Math.round(tdee / 50) * 50;
+  co.kcalN = Math.round((tdee + adj) / 50) * 50;
+  co.kcal = co.kcalN.toLocaleString();
+  co.kcalNote = adj > 0 ? '+' + adj + ' over maintenance (' + maint + ')' : adj < 0 ? adj + ' under maintenance (' + maint + ')' : 'Maintenance';
+  var pf = { fat: 2.2, muscle: 1.8, strength: 1.8, cali: 1.8, general: 1.6 }[p.goal];
+  co.protN = Math.round(Wt * pf / 5) * 5;
+  co.protein = co.protN + ' g';
+  co.proteinNote = pf + ' g per kg bodyweight';
+  co.bmi = bmi.toFixed(1);
+  co.bmiCat = bmi < 18.5 ? 'Underweight range' : bmi < 25 ? 'Healthy range' : bmi < 30 ? 'Above healthy range' : 'Well above healthy range';
+  co.water = (Math.round(Wt * 0.035 * 10) / 10) + ' L';
+  co.fromLabel = 'Now ' + fmtW(Wt) + ' kg';
+  co.toLabel = hasTW ? 'Goal ' + fmtW(TW) + ' kg' : 'Goal: ' + GOALS[p.goal];
+  if (hasTW) {
+    var diff = TW - Wt, rate, wks;
+    if (diff < 0) {
+      rate = Math.max(0.25, Wt * 0.0075); wks = Math.ceil(-diff / rate);
+      co.timeline = 'Lose ' + fmtW(Math.round(-diff * 10) / 10) + ' kg in about ' + wks + ' weeks at ~' + rate.toFixed(1) + ' kg a week (0.75% of bodyweight).' + (p.goal === 'muscle' || p.goal === 'strength' ? ' Your goal weight is lower than now — consider switching your goal to "Lose fat".' : '');
+    } else {
+      rate = { beginner: 0.3, intermediate: 0.2, advanced: 0.1 }[p.exp]; wks = Math.ceil(diff / rate);
+      co.timeline = 'Gain ' + fmtW(Math.round(diff * 10) / 10) + ' kg in about ' + wks + ' weeks at ~' + rate + ' kg a week — a pace that is mostly muscle for your level.' + (p.goal === 'fat' ? ' Your goal weight is higher than now — consider "Build muscle" instead.' : '');
+    }
+  } else co.timeline = 'Add a goal weight to see how long it will take.';
+
+  var sid = p.goal === 'cali' ? 'cali' : p.days <= 3 ? 'fb' : p.days === 4 ? 'ul' : p.days === 5 ? 'pplul' : 'ppl';
+  co.split = SPLITS.find(function (s) { return s.id === sid; });
+  co.splitWhy = {
+    fb: 'With ' + p.days + ' days a week, full-body sessions hit every muscle often enough to grow.',
+    ul: '4 days lets you train every muscle twice a week with a rest day between hard sessions.',
+    pplul: '5 days: push, pull and legs, then upper and lower — each muscle about twice a week.',
+    ppl: '6 days: push, pull, legs twice through. Lots of volume — sleep and food must keep up.',
+    cali: 'Bodyweight-first plan. Swap each move for your level on the ladders below.'
+  }[sid];
+
+  var rr = { strength: [4, 6], muscle: [8, 12], fat: [6, 10], general: [8, 12], cali: [5, 12] }[p.goal];
+  var lo = rr[0], hi = rr[1];
+  if (p.goal === 'cali') {
+    co.method = 'Progression ladder';
+    co.steps = ['Find the hardest variation you can do for 3 × 5 clean reps.', 'Build up to 3 × 12 (or 3 × 30 s holds) over the next sessions.', 'Then step up the ladder to the next variation and start again at 3 × 5.', 'Past the top of a ladder? Add weight with a belt or backpack.'];
+  } else if (p.exp === 'beginner') {
+    co.method = 'Linear progression';
+    co.steps = ['Pick a weight you can lift for ' + (p.goal === 'strength' ? 5 : lo) + ' reps with 2 reps left in the tank.', 'Every session you complete all sets, add 2.5 kg (upper body) or 5 kg (squat, deadlift).', 'Miss reps two sessions in a row? Drop 10% and build back up.', 'This keeps working for 3–6 months — then switch to double progression.'];
+  } else if (p.exp === 'intermediate') {
+    co.method = 'Double progression';
+    co.steps = ['Work in a rep range: 3 × ' + lo + '–' + hi + '.', 'Each session, try to add 1 rep to at least one set.', 'When every set hits ' + hi + ', add 2.5 kg (5 kg on legs) and go back to ' + lo + '.', 'Deload every 6–8 weeks: half the sets, ~10% lighter.'];
+  } else {
+    co.method = '6-week wave';
+    co.steps = ['Weight goes up each week while reps come down (8 → 5).', 'Week 5 is heavy top sets to show your progress.', 'Week 6 is a deload; then restart 2.5–5 kg heavier than last wave.', 'Keep most sets 1–3 reps from failure (RIR 1–3).'];
+  }
+
+  co.showLift = p.goal !== 'cali';
+  var li = (p.lift === 'squat' || p.lift === 'deadlift') ? 5 : 2.5;
+  var r25 = function (x) { return Math.round(x / 2.5) * 2.5; };
+  var weeks = [], i;
+  if (p.exp === 'beginner') {
+    var rep = p.goal === 'strength' ? 5 : lo;
+    for (i = 0; i < 6; i++) weeks.push(['Week ' + (i + 1), '3 × ' + rep, fmtW(p.liftW + li * i), i === 0 ? 'Start here' : '+' + li + ' kg']);
+  } else if (p.exp === 'intermediate') {
+    var cw = p.liftW, cr = Math.min(hi, Math.max(lo, p.liftR)), nt = 'Start here';
+    for (i = 0; i < 6; i++) {
+      weeks.push(['Week ' + (i + 1), '3 × ' + cr, fmtW(cw), nt]);
+      if (cr < hi) { cr += 1; nt = '+1 rep per set'; } else { cw += li; cr = lo; nt = '+' + li + ' kg, reps reset'; }
+    }
+  } else {
+    [[1, '4 × 8', 'Volume'], [1.025, '4 × 7', ''], [1.05, '3 × 6', ''], [1.075, '3 × 5', ''], [1.1, '3 × 3', 'Heavy top sets'], [0.8, '2 × 5', 'Deload']].forEach(function (w, j) {
+      weeks.push(['Week ' + (j + 1), w[1], fmtW(r25(p.liftW * w[0])), w[2]]);
+    });
+  }
+  co.weeks = weeks;
+  co.liftNote = p.goal === 'fat' ? 'You\'re eating in a deficit, so progress is slower — repeating a week is fine. Keeping your strength is the win.' : 'Miss the target reps? Repeat that week before moving on. Week 7: deload, then go again.';
+  co.showCali = p.goal === 'cali' || p.goal === 'general';
+  co.tips = TIPS[p.goal].concat(['Eat about ' + co.protN + ' g protein a day, spread over 3–5 meals.']);
+  return co;
+}
+
+// ---------- small render helpers ----------
+var ICON = {
+  x: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  check: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  clock: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/></svg>',
+  back: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>',
+  trend: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 17l6-6 4 4 6-7M14 8h6v6"/></svg>',
+  search: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>',
+  workout: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 6.5v11M17.5 6.5v11M3 9.5v5M21 9.5v5M6.5 12h11"/></svg>',
+  coach: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="0.8" fill="currentColor"/></svg>',
+  library: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16M4 12h16M4 19h10"/></svg>',
+  plans: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>',
+  supps: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8" width="18" height="8" rx="4" transform="rotate(-35 12 12)"/><path d="M9.2 7.9l5.6 8.2"/></svg>'
+};
+function act(name, a, b) { return 'data-act="' + name + '"' + (a !== undefined ? ' data-a="' + esc(a) + '"' : '') + (b !== undefined ? ' data-b="' + esc(b) + '"' : ''); }
+function chip(label, on, action, a, b, extra) { return '<button type="button" class="chip' + (on ? ' on' : '') + (extra ? ' ' + extra : '') + '" ' + act(action, a, b) + '>' + esc(label) + '</button>'; }
+function stepper(label, value, down, up, a, b) {
+  return '<div class="stepper"><button type="button" aria-label="Less ' + label + '" ' + act(down, a, b) + '>−</button><span>' + esc(value) + '</span><button type="button" aria-label="More ' + label + '" ' + act(up, a, b) + '>+</button></div>';
+}
+function stat(label, value, sub) { return '<div class="tile"><span class="tl">' + label + '</span><span class="tv">' + esc(value) + '</span>' + (sub ? '<span class="ts">' + esc(sub) + '</span>' : '') + '</div>'; }
+
+// ---------- views ----------
+function viewWorkout() {
+  var done = 0, total = 0, vol = 0, secs = 0, co = coach();
+  var cards = S.workout.map(function (it) {
+    var e = EXO[it.ex];
+    secs += it.sets.length * (it.rest + 45);
+    var rows = it.sets.map(function (s, i) {
+      total++; if (s.done) { done++; vol += s.w * s.r; }
+      return '<div class="setrow' + (s.done ? ' done' : '') + '"><span class="sn">' + (i + 1) + '</span>' +
+        stepper('weight', fmtW(s.w), 'wDown', 'wUp', it.uid, i) + stepper('reps', s.r, 'rDown', 'rUp', it.uid, i) +
+        '<button type="button" class="check" aria-label="Mark set ' + (i + 1) + ' done" aria-pressed="' + s.done + '" ' + act('toggle', it.uid, i) + '>' + ICON.check + '</button></div>';
+    }).join('');
+    var allDone = it.sets.length > 0 && it.sets.every(function (s) { return s.done; });
+    var hitTop = it.sets.every(function (s) { return s.r >= e.topReps; });
+    var lastW = it.sets.length ? it.sets[it.sets.length - 1].w : 0;
+    var inc = (e.kind === 'C' && (e.muscle === 'quads' || e.muscle === 'hams') && !e.cali) ? 5 : 2.5;
+    var lad = LADDER_OF[e.id], unit = e.timed ? ' s' : ' reps', tip = '';
+    if (allDone) {
+      if (hitTop) {
+        if (e.cali && lad && lad.i < lad.L.steps.length - 1) tip = 'Every set hit ' + e.topReps + unit + '. Next session, move up to ' + EXO[lad.L.steps[lad.i + 1]].name + ' at 3 × 5.';
+        else if (e.cali) tip = 'Every set hit ' + e.topReps + unit + '. Next session add 2.5 kg (belt or backpack) or slow each rep to 3 s down.';
+        else tip = 'Every set hit ' + e.topReps + ' reps. Next session: ' + fmtW(lastW + inc) + ' kg and drop back to ' + e.startReps + ' reps.';
+      } else tip = 'Nice work. Next session keep ' + (e.cali ? 'the same variation' : fmtW(lastW) + ' kg') + ' and add 1' + (e.timed ? '–5 s' : ' rep') + ' per set until you reach ' + e.topReps + unit + '.';
+    }
+    var last = lastLog(e.id);
+    var lastTxt = last ? 'Last time: ' + last.sets.map(function (s) { return fmtW(s.w) + '×' + s.r; }).join(', ') : '';
+    var resting = S.timer.running && S.timer.uid === it.uid;
+    return '<div class="card">' +
+      '<div class="row top"><button type="button" class="exname" ' + act('openEx', e.id) + '><b>' + esc(e.name) + '</b><span class="muted">' + esc(MNAME[e.muscle] + ' · ' + e.equip) + '</span></button>' +
+      '<button type="button" class="iconbtn" aria-label="Remove ' + esc(e.name) + '" ' + act('removeItem', it.uid) + '>' + ICON.x + '</button></div>' +
+      '<div class="cue"><b class="acc">' + esc(e.reps + (e.timed ? '' : ' reps') + ' · ' + e.load) + '</b> · ' + esc(e.feel) + '</div>' +
+      (lastTxt ? '<div class="small muted">' + esc(lastTxt) + '</div>' : '') +
+      '<div class="sethead"><span>Set</span><span>' + (e.cali ? '+kg' : 'kg') + '</span><span>' + (e.timed ? 'Sec' : 'Reps') + '</span><span>Done</span></div>' + rows +
+      (resting ? '<div class="resting">' + ICON.clock + '<span>Resting — next set when it hits 0</span><b data-tleft>' + fmt(timerLeft()) + '</b></div>' : '') +
+      (allDone ? '<div class="tip">' + ICON.trend + '<span><b>Coach: </b>' + esc(tip) + '</span></div>' : '') +
+      '<div class="row wrap"><button type="button" class="btn ghost sm" ' + act('addSet', it.uid) + '>+ Set</button><button type="button" class="btn ghost sm muted" ' + act('dropSet', it.uid) + '>− Set</button>' +
+      '<div class="rest">' + ICON.clock + '<span class="small muted">Rest</span><button type="button" aria-label="Shorter rest" ' + act('restDown', it.uid) + '>−</button><b>' + fmt(it.rest) + '</b><button type="button" aria-label="Longer rest" ' + act('restUp', it.uid) + '>+</button></div></div>' +
+      '</div>';
+  }).join('');
+  var pct = total ? Math.round(done / total * 100) : 0;
+  var coachLine = co.valid ? GOALS[S.profile.goal] + ' · ' + co.kcal + ' kcal · ' + co.protein + ' protein · ' + co.method : 'Set your height, weight and goal in Coach for a personal plan.';
+  var hist = S.history.slice(0, 5).map(function (h) {
+    return '<div class="histrow"><div><b>' + esc(h.title) + '</b><span class="muted small">' + esc(h.date) + '</span></div><span class="small">' + h.sets + ' sets · ' + Math.round(h.volume).toLocaleString() + ' kg · ' + h.mins + ' min</span></div>';
+  }).join('');
+  return '<div class="stack">' +
+    '<div class="card"><div class="row between"><div class="h3">' + esc(S.workoutTitle) + '</div><span class="muted small">' + S.workout.length + ' exercises</span></div>' +
+    '<div class="bar"><div style="width:' + pct + '%"></div></div>' +
+    '<div class="grid3"><div class="mini"><span>Sets</span><b>' + done + '/' + total + '</b></div><div class="mini"><span>Volume</span><b>' + Math.round(vol).toLocaleString() + ' kg</b></div><div class="mini"><span>Est. time</span><b>' + Math.round(secs / 60) + ' min</b></div></div>' +
+    '<button type="button" class="coachline" ' + act('tab', 'coach') + '><span>' + esc(coachLine) + '</span><b class="acc">Edit goals</b></button></div>' +
+    (S.workout.length ? '' : '<div class="empty">No exercises yet. Add some from the library, or load a day from a training plan.</div>') +
+    cards +
+    '<div class="grid2"><button type="button" class="btn acc" ' + act('tab', 'library') + '>+ Add exercise</button><button type="button" class="btn ghost" ' + act('tab', 'plans') + '>Load a plan</button></div>' +
+    (done ? '<button type="button" class="btn acc" ' + act('finish') + '>Finish &amp; save workout</button>' : '') +
+    (hist ? '<div class="h3 mt">Recent workouts</div><div class="card tight">' + hist + '</div>' : '') +
+    '</div>';
+}
+
+function viewCoach() {
+  var p = S.profile;
+  var field = function (label, key, mode) {
+    return '<label class="field"><span class="label">' + label + '</span><input type="text" inputmode="' + mode + '" data-field="' + key + '" value="' + esc(p[key]) + '" placeholder="—"></label>';
+  };
+  var chips = function (key, opts) { return opts.map(function (o) { return chip(o[1], p[key] === o[0], 'pick', key, o[0]); }).join(''); };
+  return '<div class="stack"><div class="card"><div class="h3">Your profile</div>' +
+    '<div class="grid2">' + field('Height (cm)', 'h', 'decimal') + field('Weight (kg)', 'w', 'decimal') + field('Age', 'age', 'numeric') + field('Goal weight (kg)', 'tw', 'decimal') + '</div>' +
+    '<div class="group"><span class="label">Main goal</span><div class="chips wrap">' + chips('goal', Object.keys(GOALS).map(function (k) { return [k, GOALS[k]]; })) + '</div></div>' +
+    '<div class="group"><span class="label">Experience</span><div class="chips wrap">' + chips('exp', [['beginner', 'Beginner (<1 yr)'], ['intermediate', 'Intermediate (1–3 yrs)'], ['advanced', 'Advanced (3+ yrs)']]) + '</div></div>' +
+    '<div class="grid2"><div class="group"><span class="label">Days / week</span><div class="seg">' + chips('days', [[2, '2'], [3, '3'], [4, '4'], [5, '5'], [6, '6']]) + '</div></div>' +
+    '<div class="group"><span class="label">Sex (for calories)</span><div class="seg">' + chips('sex', [['m', 'Male'], ['f', 'Female']]) + '</div></div></div>' +
+    '</div><div id="coachOut">' + viewCoachOut() + '</div></div>';
+}
+
+function viewCoachOut() {
+  var p = S.profile, co = coach();
+  if (!co.valid) return '<div class="empty">Enter your height, weight and age to see your numbers and plan.</div>';
+  var html = '<div class="stack">' +
+    '<div class="card"><div class="h3">Your daily numbers</div><div class="grid2">' +
+    stat('Calories', co.kcal, co.kcalNote) + stat('Protein', co.protein, co.proteinNote) + stat('BMI', co.bmi, co.bmiCat) + stat('Water', co.water, '+0.5–1 L on training days') +
+    '</div><div class="inset"><div class="row between small"><span class="muted">' + esc(co.fromLabel) + '</span><b>' + esc(co.toLabel) + '</b></div><p>' + esc(co.timeline) + '</p></div>' +
+    '<p class="small dim">Estimates (Mifflin-St Jeor formula). Adjust by ~150 kcal if your weekly average weight isn\'t moving as planned. BMI can\'t tell muscle from fat.</p></div>' +
+    '<div class="card hl"><span class="eyebrow acc">Your recommended split</span><div class="h2">' + esc(co.split.name) + '</div><p>' + esc(co.splitWhy) + '</p>' +
+    '<div class="grid2"><button type="button" class="btn acc" ' + act('loadDay', co.split.id, 0) + '>Start day 1</button><button type="button" class="btn ghost" ' + act('seePlan', co.split.id) + '>See all days</button></div></div>' +
+    '<div class="card"><span class="eyebrow">How you\'ll progressive overload</span><div class="h2">' + esc(co.method) + '</div>' +
+    co.steps.map(function (t, i) { return '<div class="step"><span class="num">' + (i + 1) + '</span><span>' + esc(t) + '</span></div>'; }).join('') + '</div>';
+  if (co.showLift) {
+    html += '<div class="card"><div class="h3">Your next 6 weeks</div><div class="chips wrap">' +
+      [['bench', 'Bench'], ['squat', 'Squat'], ['deadlift', 'Deadlift'], ['ohp', 'OHP'], ['bbrow', 'Row']].map(function (o) { return chip(o[1], p.lift === o[0], 'pick', 'lift', o[0]); }).join('') + '</div>' +
+      '<div class="grid2"><div class="group"><span class="label">Working weight now</span>' + stepper('weight', fmtW(p.liftW) + ' kg', 'liftWDown', 'liftWUp') + '</div>' +
+      '<div class="group"><span class="label">For how many reps</span>' + stepper('reps', p.liftR, 'liftRDown', 'liftRUp') + '</div></div>' +
+      '<div class="weeks">' + co.weeks.map(function (w) { return '<div class="wk"><span class="muted">' + w[0] + '</span><b>' + w[1] + '</b><b class="acc">' + w[2] + ' kg</b><span class="small muted">' + esc(w[3]) + '</span></div>'; }).join('') + '</div>' +
+      '<p class="small muted">' + esc(co.liftNote) + '</p></div>';
+  }
+  if (co.showCali) {
+    html += '<div class="card"><div class="h3">Calisthenics levels</div><p class="small muted">Tap the hardest move you can do for 3 × 5 clean reps on each path.</p>' +
+      LADDERS.map(function (L) {
+        var lvl = p.levels[L.k] || 0;
+        return '<div class="ladder"><b>' + L.name + '</b><div class="chips wrap">' +
+          L.steps.map(function (id, j) { return chip(EXO[id].name, j === lvl, 'level', L.k, j, j < lvl ? 'passed' : ''); }).join('') + '</div>' +
+          '<span class="small">' + esc(lvl < L.steps.length - 1 ? 'Now: ' + EXO[L.steps[lvl]].name + ' — build to 3 × 12. Next: ' + EXO[L.steps[lvl + 1]].name + '.' : 'Top of the ladder — add weight or slow the reps down.') + '</span></div>';
+      }).join('') +
+      '<button type="button" class="btn acc" ' + act('buildCali') + '>Build today\'s workout from my levels</button></div>';
+  }
+  html += '<div class="card"><span class="eyebrow">Coach tips for your goal</span>' + co.tips.map(function (t) { return '<div class="bullet"><span class="acc">→</span><span>' + esc(t) + '</span></div>'; }).join('') + '</div></div>';
+  return html;
+}
+
+function exMatches() {
+  var q = (S.q || '').toLowerCase().trim();
+  return EXLIST.filter(function (e) {
+    if (S.filter === 'cali') { if (!e.cali) return false; }
+    else if (S.filter !== 'all' && e.muscle !== S.filter) return false;
+    return !q || (e.name + ' ' + e.equip + ' ' + MNAME[e.muscle]).toLowerCase().indexOf(q) !== -1;
+  });
+}
+function viewExList() {
+  var list = exMatches();
+  return '<div class="small muted">' + list.length + (list.length === 1 ? ' exercise' : ' exercises') + ' · tap one for form, feel and reps</div>' +
+    list.map(function (e) {
+      return '<button type="button" class="exitem" ' + act('openEx', e.id) + '><span class="grow"><b>' + esc(e.name) + '</b><span class="muted small">' + esc(MNAME[e.muscle] + ' · ' + e.equip + ' · ' + (e.kind === 'C' ? 'Compound' : 'Isolation')) + '</span></span>' +
+        '<span class="right"><b class="acc cond">' + esc(e.reps) + '</b><span class="tiny muted">' + esc(e.load) + '</span></span></button>';
+    }).join('');
+}
+function viewLibrary() {
+  var g = S.filter !== 'all' ? GUIDES[S.filter] : null;
+  return '<div class="stack">' +
+    '<label class="search">' + ICON.search + '<span class="sr">Search exercises</span><input id="search" type="search" value="' + esc(S.q) + '" placeholder="Search ' + EXLIST.length + ' exercises"></label>' +
+    '<div class="chips scroll">' + [['all', 'All'], ['cali', 'Calisthenics']].concat(MUSCLES).map(function (m) { return chip(m[1], S.filter === m[0], 'filter', m[0]); }).join('') + '</div>' +
+    (g ? '<div class="card"><div class="h3">How to train ' + esc(MNAME[S.filter].toLowerCase()) + '</div>' +
+      '<div class="group"><span class="eyebrow acc">What you should feel</span><p>' + esc(g.feel) + '</p></div>' +
+      '<div class="group"><span class="eyebrow acc">Load &amp; reps</span><p>' + esc(g.load) + '</p></div>' +
+      '<div class="group"><span class="eyebrow warn">Not feeling it?</span><p>' + esc(g.fix) + '</p></div></div>' : '') +
+    '<div id="exList" class="stack tight">' + viewExList() + '</div></div>';
+}
+
+function viewPlans() {
+  var rules = [
+    ['Progressive overload', 'Hit the top of the rep range on every set? Add 2.5 kg (or 1–2 kg on small lifts) next session. No progress, no growth.'],
+    ['Effort: 0–3 reps from failure', 'Stop most sets with 1–3 reps left in the tank. Isolation moves can go to failure; leave 1–2 on heavy squats, deadlifts and presses.'],
+    ['Volume: 10–20 sets per muscle, per week', 'Spread over 2+ sessions. Beginners grow on ~10; more isn\'t better if you can\'t recover.'],
+    ['Rep ranges', 'Anything from ~5 to 30 reps builds muscle when taken close to failure. Go heavy (5–8) on big compounds; 10–20 on isolations and joint-unfriendly moves.'],
+    ['Rest between sets', '2–3 min on compounds, 1–2 min on isolations. Short rest means fewer reps on the next set.'],
+    ['Form beats load', 'Lower in 2–3 s, use full range, feel the target muscle. If another muscle takes over, drop the weight 10–20%.'],
+    ['Recovery', 'Sleep 7–9 h, eat 1.6–2.2 g protein per kg bodyweight. Deload (half the sets) for a week every 6–8 weeks or when lifts stall.']
+  ];
+  return '<div class="stack"><p class="muted">Pick a split that fits how many days you can train. Tap a plan to see each day, then load it straight into today\'s workout.</p>' +
+    SPLITS.map(function (sp) {
+      var open = S.openSplit === sp.id;
+      return '<div class="card flush' + (open ? ' hl' : '') + '"><button type="button" class="acc-head" aria-expanded="' + open + '" ' + act('openSplit', sp.id) + '>' +
+        '<span class="badge"><b class="acc">' + sp.freq + '</b><span>days</span></span><span class="grow"><b>' + esc(sp.name) + '</b><span class="muted small">' + esc(sp.level + ' · ' + sp.schedule) + '</span></span><span class="chev">' + (open ? '−' : '+') + '</span></button>' +
+        (open ? '<div class="acc-body"><p>' + esc(sp.who) + '</p>' + sp.days.map(function (d, i) {
+          return '<div class="day"><div class="grow"><b class="cond up">' + esc(d.name) + '</b><span class="muted small">' + esc(d.ex.map(function (id) { return EXO[id] ? EXO[id].name : id; }).join(' · ')) + '</span></div><button type="button" class="btn acc sm" ' + act('loadDay', sp.id, i) + '>Load</button></div>';
+        }).join('') + '</div>' : '') + '</div>';
+    }).join('') +
+    '<div class="h3 mt">Train properly: the rules</div>' +
+    rules.map(function (r) { return '<div class="card tight"><b>' + r[0] + '</b><p class="muted">' + r[1] + '</p></div>'; }).join('') + '</div>';
+}
+
+function viewSupps() {
+  var tierChips = [['all', 'All']].concat(Object.keys(TIERS).map(function (k) { return [k, TIERS[k].label]; }));
+  return '<div class="stack"><div class="warnbox">General info, not medical advice. Check with a doctor if you have a health condition or take medication. Buy third-party tested products (e.g. Informed Sport) — supplements aren\'t tightly regulated.</div>' +
+    '<div class="chips scroll">' + tierChips.map(function (t) { return chip(t[1], S.tier === t[0], 'tier', t[0]); }).join('') + '</div>' +
+    SUPPS.filter(function (p) { return S.tier === 'all' || p.tier === S.tier; }).map(function (p) {
+      var open = S.openSupp === p.id, T = TIERS[p.tier];
+      return '<div class="card flush"><button type="button" class="acc-head" aria-expanded="' + open + '" ' + act('openSupp', p.id) + '><span class="grow"><b>' + esc(p.name) + '</b><span class="muted small">' + esc(p.short) + '</span></span>' +
+        '<span class="tier" style="background:' + (p.tier === 'strong' ? 'var(--acc)' : T.bg) + '">' + T.label + '</span></button>' +
+        (open ? '<div class="acc-body"><span class="eyebrow acc">Benefits</span>' + p.benefits.map(function (b) { return '<div class="bullet"><span class="acc">+</span><span>' + esc(b) + '</span></div>'; }).join('') +
+          '<span class="eyebrow warn">Side effects &amp; cautions</span>' + p.sides.map(function (b) { return '<div class="bullet"><span class="warn">!</span><span>' + esc(b) + '</span></div>'; }).join('') +
+          '<div class="inset"><span class="eyebrow">How to take</span><p>' + esc(p.dose) + '</p></div><p class="small muted">' + esc(p.note) + '</p></div>' : '') + '</div>';
+    }).join('') + '</div>';
+}
+
+function viewDetail() {
+  var e = EXO[S.detail]; if (!e) return '';
+  var dl = LADDER_OF[e.id];
+  var inW = S.workout.some(function (x) { return x.ex === e.id; });
+  return '<div id="detail" class="detail"><div class="dhead"><button type="button" class="iconbtn" aria-label="Back" ' + act('closeEx') + '>' + ICON.back + '</button><span class="eyebrow">' + esc(MNAME[e.muscle] + ' · ' + (e.kind === 'C' ? 'Compound' : 'Isolation')) + '</span></div>' +
+    '<div class="dbody stack"><h2 class="h1">' + esc(e.name) + '</h2>' +
+    '<div class="grid3">' + stat('Reps', e.reps) + stat('Load', e.load) + stat('Rest', fmt(e.rest)) + '</div>' +
+    '<div class="small muted">Equipment: ' + esc(e.equip) + '</div>' +
+    '<div class="card"><span class="eyebrow acc">Where you should feel it</span><p class="big">' + esc(e.feel) + '</p></div>' +
+    '<div class="group"><span class="eyebrow">How to do it</span>' + e.steps.map(function (t, i) { return '<div class="step"><span class="num">' + (i + 1) + '</span><span>' + esc(t) + '</span></div>'; }).join('') + '</div>' +
+    (dl ? '<div class="card"><span class="eyebrow acc">' + esc(dl.L.name) + ' · easiest to hardest</span><div class="chips wrap">' +
+      dl.L.steps.map(function (id, i) { return chip((i + 1) + '. ' + EXO[id].name, i === dl.i, 'openEx', id); }).join('') +
+      '</div><p class="small muted">Move up one step when you can do 3 sets of 12 (or 3 × 30 s holds) with clean form.</p></div>' : '') +
+    '<div class="warnbox"><span class="eyebrow warn">Common mistake</span><p>' + esc(e.mistake) + '</p></div>' +
+    '<div class="card"><span class="eyebrow">Training ' + esc(MNAME[e.muscle]) + '</span><p>' + esc(GUIDES[e.muscle].load) + '</p></div>' +
+    '<button type="button" class="btn acc" ' + act('addEx', e.id) + '>' + (inW ? 'Add another to today\'s workout' : 'Add to today\'s workout') + '</button></div></div>';
+}
+
+function viewTimer() {
+  var t = S.timer;
+  if (!t.running && !t.finished) return '';
+  var left = timerLeft(), pct = t.total ? Math.round((1 - left / t.total) * 100) : 100;
+  return '<div class="timer' + (t.finished ? ' fin' : '') + '" role="status"><div class="row"><div class="grow"><span class="eyebrow">' + (t.finished ? 'Rest over' : 'Resting') + '</span><b class="tbig" data-tleft>' + (t.finished ? 'Next set!' : fmt(left)) + '</b></div>' +
+    '<button type="button" class="btn line sm" ' + act('timerAdd') + '>+15s</button><button type="button" class="btn dark sm" ' + act('timerSkip') + '>' + (t.finished ? 'Done' : 'Skip') + '</button></div>' +
+    '<div class="tbar"><div data-tbar style="width:' + pct + '%"></div></div></div>';
+}
+
+var TITLES = { workout: 'Today', coach: 'Coach', library: 'Exercises', plans: 'Plans', supps: 'Supplements' };
+function render() {
+  var main = document.getElementById('main'), det = document.getElementById('detail');
+  var scroll = main ? main.scrollTop : 0, dscroll = det ? det.scrollTop : 0, prevTab = render.tab, prevDet = render.det;
+  var sub = { workout: (function (n) { return n + (n === 1 ? ' set done' : ' sets done'); })(S.workout.reduce(function (a, it) { return a + it.sets.filter(function (s) { return s.done; }).length; }, 0)), coach: 'Your goals & plan', library: EXLIST.length + ' moves', plans: SPLITS.length + ' splits', supps: 'What works, what doesn\'t' }[S.tab];
+  var body = { workout: viewWorkout, coach: viewCoach, library: viewLibrary, plans: viewPlans, supps: viewSupps }[S.tab]();
+  var nav = [['workout', 'Workout'], ['coach', 'Coach'], ['library', 'Exercises'], ['plans', 'Plans'], ['supps', 'Supps']].map(function (n) {
+    return '<button type="button" class="' + (S.tab === n[0] ? 'on' : '') + '" aria-current="' + (S.tab === n[0] ? 'page' : 'false') + '" ' + act('tab', n[0]) + '>' + ICON[n[0]] + '<span>' + n[1] + '</span></button>';
+  }).join('');
+  document.getElementById('app').innerHTML =
+    '<header><div><div class="brand">' + esc(APP_NAME) + '</div><h1>' + TITLES[S.tab] + '</h1></div><div class="muted small">' + esc(sub) + '</div></header>' +
+    '<main id="main">' + body + '</main>' + (S.detail ? viewDetail() : '') + viewTimer() + '<nav aria-label="Main">' + nav + '</nav>' +
+    (render.toast ? '<div class="toast" role="status">' + esc(render.toast) + '</div>' : '');
+  var m2 = document.getElementById('main'), d2 = document.getElementById('detail');
+  if (m2 && prevTab === S.tab) m2.scrollTop = scroll;
+  if (d2 && prevDet === S.detail) d2.scrollTop = dscroll;
+  render.tab = S.tab; render.det = S.detail;
+  save();
+}
+
+// ---------- actions ----------
+function updSet(uid, si, fn) { var it = findItem(uid); if (it && it.sets[si]) fn(it.sets[si]); }
+function setProfile(k, v) { S.profile[k] = v; }
+
+var ACTIONS = {
+  tab: function (t) { S.tab = t; S.detail = null; render.tab = null; },
+  openEx: function (id) { S.detail = id; render.det = null; },
+  closeEx: function () { S.detail = null; },
+  wDown: function (u, i) { updSet(+u, +i, function (s) { s.w = Math.max(0, s.w - 2.5); }); },
+  wUp: function (u, i) { updSet(+u, +i, function (s) { s.w += 2.5; }); },
+  rDown: function (u, i) { updSet(+u, +i, function (s) { s.r = Math.max(1, s.r - 1); }); },
+  rUp: function (u, i) { updSet(+u, +i, function (s) { s.r += 1; }); },
+  toggle: function (u, i) {
+    var it = findItem(+u); if (!it) return;
+    var s = it.sets[+i]; s.done = !s.done;
+    if (!S.startedAt) S.startedAt = Date.now();
+    if (s.done) { S.timer = { endAt: Date.now() + it.rest * 1000, total: it.rest, uid: it.uid, running: true, finished: false }; unlockAudio(); }
+  },
+  addSet: function (u) { var it = findItem(+u); if (!it) return; var l = it.sets[it.sets.length - 1] || { w: defW(EXO[it.ex].equip), r: EXO[it.ex].startReps }; it.sets.push({ w: l.w, r: l.r, done: false }); },
+  dropSet: function (u) { var it = findItem(+u); if (it && it.sets.length > 1) it.sets.pop(); },
+  restDown: function (u) { var it = findItem(+u); if (it) it.rest = Math.max(15, it.rest - 15); },
+  restUp: function (u) { var it = findItem(+u); if (it) it.rest = Math.min(600, it.rest + 15); },
+  removeItem: function (u) { S.workout = S.workout.filter(function (x) { return x.uid !== +u; }); },
+  addEx: function (id) { S.workout.push(makeItem(id)); S.detail = null; S.tab = 'workout'; render.tab = null; flash('Added ' + EXO[id].name); },
+  filter: function (m) { S.filter = m; },
+  openSplit: function (id) { S.openSplit = S.openSplit === id ? null : id; },
+  loadDay: function (sid, i) { var sp = SPLITS.find(function (s) { return s.id === sid; }); var d = sp.days[+i]; S.workout = buildDay(d.ex); S.workoutTitle = sp.name + ': ' + d.name; S.startedAt = null; S.tab = 'workout'; render.tab = null; },
+  seePlan: function (sid) { S.tab = 'plans'; S.openSplit = sid; render.tab = null; },
+  tier: function (k) { S.tier = k; },
+  openSupp: function (id) { S.openSupp = S.openSupp === id ? null : id; },
+  timerAdd: function () { var t = S.timer; var base = t.running ? t.endAt : Date.now(); S.timer = Object.assign({}, t, { endAt: base + 15000, total: t.total + 15, running: true, finished: false }); },
+  timerSkip: function () { S.timer = { endAt: 0, total: 0, uid: null, running: false, finished: false }; },
+  pick: function (k, v) { setProfile(k, k === 'days' ? +v : v); },
+  liftWDown: function () { S.profile.liftW = Math.max(0, S.profile.liftW - 2.5); },
+  liftWUp: function () { S.profile.liftW += 2.5; },
+  liftRDown: function () { S.profile.liftR = Math.max(1, S.profile.liftR - 1); },
+  liftRUp: function () { S.profile.liftR = Math.min(30, S.profile.liftR + 1); },
+  level: function (k, j) { S.profile.levels[k] = +j; },
+  buildCali: function () { S.workout = buildDay(LADDERS.map(function (L) { return L.steps[S.profile.levels[L.k] || 0]; })); S.workoutTitle = 'Calisthenics: my levels'; S.startedAt = null; S.tab = 'workout'; render.tab = null; },
+  finish: function () {
+    var sets = 0, vol = 0, items = [];
+    S.workout.forEach(function (it) {
+      var done = it.sets.filter(function (s) { return s.done; });
+      if (done.length) items.push({ ex: it.ex, sets: done.map(function (s) { return { w: s.w, r: s.r }; }) });
+      done.forEach(function (s) { sets++; vol += s.w * s.r; });
+    });
+    if (!sets) return;
+    var mins = S.startedAt ? Math.max(1, Math.round((Date.now() - S.startedAt) / 60000)) : 0;
+    S.history.unshift({ date: new Date().toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' }), title: S.workoutTitle, sets: sets, volume: vol, mins: mins, items: items });
+    S.history = S.history.slice(0, 60);
+    S.workout.forEach(function (it) { it.sets.forEach(function (s) { s.done = false; }); });
+    S.startedAt = null;
+    ACTIONS.timerSkip();
+    flash('Workout saved — great session!');
+  }
+};
+
+function flash(msg) {
+  render.toast = msg;
+  clearTimeout(flash.t);
+  flash.t = setTimeout(function () { render.toast = null; render(); }, 2200);
+}
+
+document.addEventListener('click', function (ev) {
+  var el = ev.target.closest('[data-act]');
+  if (!el) return;
+  var fn = ACTIONS[el.getAttribute('data-act')];
+  if (!fn) return;
+  fn(el.getAttribute('data-a'), el.getAttribute('data-b'));
+  render();
+});
+
+document.addEventListener('input', function (ev) {
+  var el = ev.target;
+  if (el.id === 'search') {
+    S.q = el.value;
+    var box = document.getElementById('exList'); if (box) box.innerHTML = viewExList();
+    save();
+  } else if (el.hasAttribute('data-field')) {
+    S.profile[el.getAttribute('data-field')] = el.value.replace(/[^0-9.]/g, '');
+    var out = document.getElementById('coachOut'); if (out) out.innerHTML = viewCoachOut();
+    save();
+  }
+});
+
+// ---------- rest timer: sound + vibration ----------
+var audioCtx = null;
+function unlockAudio() {
+  try { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); } catch (err) { audioCtx = null; }
+}
+function beep() {
+  if (navigator.vibrate) { try { navigator.vibrate([250, 120, 250]); } catch (err) { /* ignore */ } }
+  if (!audioCtx) return;
+  [0, 0.25, 0.5].forEach(function (t) {
+    var o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.frequency.value = 880; o.connect(g); g.connect(audioCtx.destination);
+    var s = audioCtx.currentTime + t;
+    g.gain.setValueAtTime(0.0001, s); g.gain.exponentialRampToValueAtTime(0.3, s + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, s + 0.18);
+    o.start(s); o.stop(s + 0.2);
+  });
+}
+
+setInterval(function () {
+  var t = S.timer;
+  if (!t.running) return;
+  var left = timerLeft();
+  if (left <= 0) {
+    S.timer = Object.assign({}, t, { running: false, finished: true });
+    beep();
+    render();
+    return;
+  }
+  var txt = fmt(left), pct = t.total ? Math.round((1 - left / t.total) * 100) : 100;
+  document.querySelectorAll('[data-tleft]').forEach(function (n) { n.textContent = txt; });
+  document.querySelectorAll('[data-tbar]').forEach(function (n) { n.style.width = pct + '%'; });
+}, 250);
+
+document.title = APP_NAME;
+render();
+
+if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
+  window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+}
+
+</script>
+</body>
+</html>
