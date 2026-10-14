@@ -19,7 +19,3 @@ It then opens full-screen like a normal app and works offline.
 - `index.html` — the whole app (HTML, CSS, JS)
 - `manifest.json`, `sw.js`, `icon-*.png` — make it installable and work offline
 
-## Rename the app
-Change `APP_NAME` near the top of the app script in `index.html`, plus `name`/`short_name` in `manifest.json`.
-
-*Fitness and supplement info is general guidance, not medical advice.*
